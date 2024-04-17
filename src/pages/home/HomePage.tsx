@@ -1,17 +1,16 @@
-import { useState } from 'react'
+/*import { useState } from 'react'
 import reactLogo from '../../assets/react.svg'
 import AppLogo from '../../assets/lawyer_icon.svg'
 import loginLogo from '../../assets/login.svg'
 import viteLogo from '/vite.svg'
-import './HomePage.css'
 import { Menubar } from 'primereact/menubar';
-import { Button } from 'primereact/button'
+import { Button } from 'primereact/button'*/
+import './HomePage.css'
 
 function HomePage() {
-  const [count, setCount] = useState(0)
- 
+  /*const [count, setCount] = useState(0);
   const start = <a href="/" target="_blank"><img src={AppLogo} className="logo app" alt="App logo" /></a>;
-  const end = <a href="./Login"><img src={loginLogo} className="logo login" alt="Log in" /></a>;
+  const end = <a href="./Login"><img src={loginLogo} className="logo login" alt="Log in" /></a>;*/
 
   return (
     <>
@@ -23,7 +22,7 @@ function HomePage() {
     <section className="intro-section">
         <h2>¿Enfrentando un problema legal? </h2>
         <p>Nuestro equipo de abogados expertos está aquí para ayudarte.</p>
-        <br/><a href="./Login" className="cta-button">Iniciar Sesión</a>
+        <br/><a href="./Login" className="cta-button">Iniciar Sesión</a> 
     </section>
 
     <section className="services-section">
