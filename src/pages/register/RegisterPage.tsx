@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
-import 'primereact/resources/themes/saga-blue/theme.css'; // you can change this line according to your choice.
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
 import './RegisterPage.css'
+import { Box, Button, Card, CardActions, CardContent, FormControl, MenuItem, TextField } from '@mui/material';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseConfig';
+import { addDoc, collection } from 'firebase/firestore';
+import { UserModel } from '../../services/UserModel/UserModel';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -15,18 +15,58 @@ const RegisterPage: React.FC = () => {
   const [role, setRole] = useState('');
   const navigate = useNavigate();
 
-  const roles = [
-    { name: 'Abogado', code: 'LW' },
-    { name: 'Cliente', code: 'CL' },
-    { name: 'Administrador', code: 'AD' } 
-];
+  const registerAction = async (emailP: string, nameP: string, passwordP: string, roleP: string) => {
+    try {
+      console.log("> Registering user")
+      //setLoading(true);
+      const {
+        user
+      } = await createUserWithEmailAndPassword(firebaseAuth, emailP, passwordP)
+  
+      console.log("> Updating profile")
+      await updateProfile(user, {
+        displayName: name,
+      });
+      const userData: UserModel = new UserModel(
+        nameP,
+        emailP,
+        roleP,
+        user.uid
+      );
+      const usersCollection = collection(firebaseDatabase, 'users');
+      const documentAddedRef = await addDoc(usersCollection, {...userData});
+      console.log(documentAddedRef); 
+      
+      window.location.pathname = `/login`;
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // Aquí puedes agregar la lógica de autenticación
     // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
 
     // Después de la autenticación exitosa, redirige al usuario a la página de inicio
-    navigate('/');
+
+    if (email && name && password && role) {
+      const {
+        user
+      } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      
+      const userData: UserModel = new UserModel(
+        name,
+        email,
+        role,
+        user.uid
+      );
+      const usersCollection = collection(firebaseDatabase, 'users');
+      const documentAddedRef = await addDoc(usersCollection, {...userData});
+      console.log(documentAddedRef);
+    };
+
+     
+      //setLoading(false)
   };
 
   const handleBack = () => {
@@ -36,75 +76,66 @@ const RegisterPage: React.FC = () => {
     navigate('/Login');
   };
 
-  const handleCancel  = () => {
+  const handleCancel = () => {
     // Aquí puedes agregar la lógica de vuelta a la page anterior
     // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
 
     navigate('/');
   };
 
+  const roles = [
+    { name: 'Abogado', code: 'LW' },
+    { name: 'Cliente', code: 'CL' },
+    { name: 'Administrador', code: 'AD' }
+  ];
+
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleLogin}>
-        <div className="p-field p-grid">
-            <label htmlFor="firstname3" className="p-col-fixed" style={{width:'100px'}}>Email</label>
-            <div className="p-col">
-            <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <Card sx={{ marginTop: 20, minWidth: 200, borderRadius: "40px" }}>
+      <CardContent>
+        <h2>Register</h2>
+        <Box sx={{ minWidth: 180 }}>
+          <FormControl component="form" sx={{ '& > :not(style)': { m: 1, width: '50ch' }, }}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleLogin}
+          >
+            <div>
+              <TextField id="Email-basic" label="Email" variant="standard" type="email" value={email} onChange={(e) => (setEmail(e.target.value))} />
             </div>
-        </div>
-        <div className="p-field p-grid">
-            <label htmlFor="firstname3" className="p-col-fixed" style={{width:'100px'}}>Name</label>
-            <div className="p-col">
-            <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+            <div>
+              <TextField id="Name-basic" label="Name" variant="standard" value={name} onChange={(e) => (setName(e.target.value))} />
             </div>
-        </div>
+            <div>
+                <TextField sx={{ width: '20ch' }} 
+                  select
+                  label="Role"
+                  value={role}
+                  onChange={(e) => (setRole(e.target.value))}
+                  variant="standard"
+                >
+                  {roles.map((role) => (
+                    <MenuItem key={role.code} value={role.name}>
+                      {role.name}
+                    </MenuItem>
+                  ))}
+                </TextField> 
+            </div>
+            <div>
+              <TextField id="Password-basic" label="Password" variant="standard" type="password" value={password} onChange={(e) => (setPassword(e.target.value))} />
+            </div>
+            <div>
+              <TextField id="PasswordCheck-basic" label="Password Confirmation" variant="standard" type="password" value={passwordCheck} onChange={(e) => (setPasswordCheck(e.target.value))} />
+            </div>
 
-        <div className="p-field p-grid">
-            <label htmlFor="firstname3" className="p-col-fixed" style={{width:'100px'}}>Role</label>
-            <div className="p-col">
-            <Dropdown value={role} options={roles} onChange={(e) => setRole(e.target.value)} optionLabel="name" placeholder="Select a role" />
-            </div>
-        </div>
-
-        <div className="p-field p-grid">
-            <label htmlFor="lastname3" className="p-col-fixed" style={{width:'100px'}}>Password</label>
-            <div className="p-col">
-            <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-            </div>
-        </div>
-        <div className="p-field p-grid">
-            <label htmlFor="lastname3" className="p-col-fixed" style={{width:'100px'}}>Password Confirmation</label>
-            <div className="p-col">
-            <input
-            type="password"
-            id="passwordCheck"
-            value={passwordCheck}
-            onChange={(e) => setPasswordCheck(e.target.value)}
-          />
-            </div>
-        </div>
-        <br/>
-        <Button label="Log in" icon="pi-check" type='submit' className="p-button-text p-button-success"/> 
-        <Button label="Back" icon="pi-angle-left" iconPos="right" onClick={handleBack} className="p-button-text p-button-warning"/> 
-        <Button label="Cancel" icon="pi-angle-left" iconPos="right" onClick={handleCancel} className="p-button-text p-button-help"/> 
-      </form>
-    </div>
+            <CardActions className='button-section'>
+              <Button variant="contained" onClick={handleLogin} type='submit' color="success" className='button-section-element' >Register  </Button>
+              <Button variant="contained" onClick={handleBack} color="error" className='button-section-element' >Back    </Button>
+              <Button variant="contained" onClick={handleCancel} color="secondary" className='button-section-element' >Cancel  </Button>
+            </CardActions>
+          </FormControl>
+        </Box>
+      </CardContent>
+    </Card>
   );
 };
 
