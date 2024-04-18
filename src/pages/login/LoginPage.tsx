@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './LoginPage.css'
 import Button from '@mui/material/Button'; 
 import { Box, Card, CardActions, CardContent, FormControl, TextField } from '@mui/material';
-import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
-import { firebaseAuth } from '../../services/Firebase/FirebaseConfig';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'; 
+import { firebaseAuth } from '../../services/Firebase/FirebaseService';
 
 export let logged = false;
 

@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import React from 'react';
 import LoggedBarPage from './LoggedBarPage';
-import { onAuthStateChanged } from 'firebase/auth';
-import { firebaseAuth } from '../../services/Firebase/FirebaseConfig';
+import { onAuthStateChanged } from 'firebase/auth'; 
 import { useNavigate } from 'react-router-dom';
+import { firebaseAuth } from '../../services/Firebase/FirebaseService';
 
 function LoggedContentPage() {
     const navigate = useNavigate();

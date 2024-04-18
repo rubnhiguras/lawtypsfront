@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import './RegisterPage.css'
 import { Box, Button, Card, CardActions, CardContent, FormControl, MenuItem, TextField } from '@mui/material';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseConfig';
+ 
 import { addDoc, collection } from 'firebase/firestore';
 import { UserModel } from '../../services/UserModel/UserModel';
+import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');

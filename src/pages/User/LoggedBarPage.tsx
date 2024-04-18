@@ -11,10 +11,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';  
 import { Fingerprint } from '@mui/icons-material';
-import { signOut } from 'firebase/auth';
-import { firebaseAuth } from '../../services/Firebase/FirebaseConfig';
+import { signOut } from 'firebase/auth'; 
 import { useNavigate } from 'react-router-dom'; 
 import React from 'react';
+import { firebaseAuth } from '../../services/Firebase/FirebaseService';
 
 function LoggedBarPage() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
