@@ -2,31 +2,25 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css'
 import Button from '@mui/material/Button'; 
-import { Box, Card, CardActions, CardContent, FormControl, TextField } from '@mui/material';
+import { Backdrop, Box, Card, CardActions, CardContent, CircularProgress, FormControl, TextField } from '@mui/material';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'; 
 import { firebaseAuth } from '../../services/Firebase/FirebaseService';
-
-export let logged = false;
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
 
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user) {
       // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User
-      const uid = user.uid;
-      // ...
-      console.log("uid", uid)
-      logged = true;
+      // https://firebase.google.com/docs/reference/js/firebase.User  
+      // ... 
       navigate("/user")
     } else {
       // User is signed out
       // ...
-      console.log("user is logged out")
-      logged = false; 
     }
   }); 
 
@@ -35,21 +29,19 @@ const LoginPage: React.FC = () => {
     // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
 
     // Después de la autenticación exitosa, redirige al usuario a la página de inicio
+    setOpen(true);
     signInWithEmailAndPassword(firebaseAuth, email, password)
     .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        navigate("/user")
         console.log(user);
     })
     .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage)
-    });
+    }).finally(()=>{setOpen(false);});
     
-    logged = true;
-    navigate('/User');
   };
 
   const handleBack = () => {
@@ -68,6 +60,12 @@ const LoginPage: React.FC = () => {
 
   return (
     <Card sx={{ marginTop: 20, minWidth: 200, borderRadius: "40px" }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <CardContent>
         <h2>Login</h2>
         <Box sx={{ minWidth: 120 }}>

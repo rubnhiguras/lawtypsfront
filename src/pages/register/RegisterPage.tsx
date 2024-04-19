@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegisterPage.css'
-import { Box, Button, Card, CardActions, CardContent, FormControl, MenuItem, TextField } from '@mui/material';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
- 
-import { addDoc, collection } from 'firebase/firestore';
+import { Backdrop, Box, Button, Card, CardActions, CardContent, CircularProgress, FormControl, MenuItem, TextField } from '@mui/material';
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+
+import { collection, doc, setDoc } from 'firebase/firestore';
 import { UserModel } from '../../services/UserModel/UserModel';
 import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
 
 const RegisterPage: React.FC = () => {
+  const [open, setOpen] = React.useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -16,58 +17,44 @@ const RegisterPage: React.FC = () => {
   const [role, setRole] = useState('');
   const navigate = useNavigate();
 
-  const registerAction = async (emailP: string, nameP: string, passwordP: string, roleP: string) => {
-    try {
-      console.log("> Registering user")
-      //setLoading(true);
-      const {
-        user
-      } = await createUserWithEmailAndPassword(firebaseAuth, emailP, passwordP)
-  
-      console.log("> Updating profile")
-      await updateProfile(user, {
-        displayName: name,
-      });
-      const userData: UserModel = new UserModel(
-        nameP,
-        emailP,
-        roleP,
-        user.uid
-      );
-      const usersCollection = collection(firebaseDatabase, 'users');
-      const documentAddedRef = await addDoc(usersCollection, {...userData});
-      console.log(documentAddedRef); 
-      
-      window.location.pathname = `/login`;
-    } catch (e) {
-      console.log(e)
+  onAuthStateChanged(firebaseAuth, (user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User 
+      navigate("/user");
+    } else {
+      // User is signed out
+      // ...
     }
-  }
+  }); 
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     // Aquí puedes agregar la lógica de autenticación
     // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
 
     // Después de la autenticación exitosa, redirige al usuario a la página de inicio
-
+    setOpen(true);
     if (email && name && password && role) {
-      const {
-        user
-      } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      
-      const userData: UserModel = new UserModel(
-        name,
-        email,
-        role,
-        user.uid
-      );
-      const usersCollection = collection(firebaseDatabase, 'users');
-      const documentAddedRef = await addDoc(usersCollection, {...userData});
-      console.log(documentAddedRef);
+      createUserWithEmailAndPassword(firebaseAuth, email, password)
+        .then(credential => {
+          const userData: UserModel = new UserModel(
+            name,
+            email,
+            role,
+            credential.user.uid
+          );
+          const usersCollection = collection(firebaseDatabase, 'users');
+          setDoc(doc(usersCollection, credential.user.uid), { ...userData })
+            .then(ref => {
+              console.log(ref);
+            }).catch((error) => {
+              alert(error.message);
+            }).finally(() => { setOpen(false); });
+        });
     };
 
-     
-      //setLoading(false)
+
+    //setLoading(false)
   };
 
   const handleBack = () => {
@@ -92,6 +79,12 @@ const RegisterPage: React.FC = () => {
 
   return (
     <Card sx={{ marginTop: 20, minWidth: 200, borderRadius: "40px" }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <CardContent>
         <h2>Register</h2>
         <Box sx={{ minWidth: 180 }}>
@@ -107,19 +100,19 @@ const RegisterPage: React.FC = () => {
               <TextField id="Name-basic" label="Name" variant="standard" value={name} onChange={(e) => (setName(e.target.value))} />
             </div>
             <div>
-                <TextField sx={{ width: '20ch' }} 
-                  select
-                  label="Role"
-                  value={role}
-                  onChange={(e) => (setRole(e.target.value))}
-                  variant="standard"
-                >
-                  {roles.map((role) => (
-                    <MenuItem key={role.code} value={role.name}>
-                      {role.name}
-                    </MenuItem>
-                  ))}
-                </TextField> 
+              <TextField sx={{ width: '20ch' }}
+                select
+                label="Role"
+                value={role}
+                onChange={(e) => (setRole(e.target.value))}
+                variant="standard"
+              >
+                {roles.map((role) => (
+                  <MenuItem key={role.code} value={role.name}>
+                    {role.name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </div>
             <div>
               <TextField id="Password-basic" label="Password" variant="standard" type="password" value={password} onChange={(e) => (setPassword(e.target.value))} />
@@ -129,7 +122,7 @@ const RegisterPage: React.FC = () => {
             </div>
 
             <CardActions className='button-section'>
-              <Button variant="contained" onClick={handleLogin} type='submit' color="success" className='button-section-element' >Register  </Button>
+              <Button variant="contained" onClick={handleLogin} color="success" className='button-section-element' >Register  </Button>
               <Button variant="contained" onClick={handleBack} color="error" className='button-section-element' >Back    </Button>
               <Button variant="contained" onClick={handleCancel} color="secondary" className='button-section-element' >Cancel  </Button>
             </CardActions>

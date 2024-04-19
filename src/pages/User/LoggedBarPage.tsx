@@ -11,15 +11,24 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';  
 import { Fingerprint } from '@mui/icons-material';
-import { signOut } from 'firebase/auth'; 
+import { onAuthStateChanged, signOut } from 'firebase/auth'; 
 import { useNavigate } from 'react-router-dom'; 
 import React from 'react';
-import { firebaseAuth } from '../../services/Firebase/FirebaseService';
+import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { Backdrop, CircularProgress } from '@mui/material';
 
-function LoggedBarPage() {
+let userlogged: string = "'Persona Misteriosa'"; 
+let urlProfile: string = "https://i.seadn.io/gae/Ihufw_BbfNUhFBD-XF74FlY2JjpYeUkkTdhzJy_bjEdfz0qKlLMOkxlUKxyJR7ib5dgsji9XZAMuorSX20Fw12q5XZ2LJTj2efcS?auto=format&dpr=1&w=1000"; 
+
+function LoggedBarPage(props: any){
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const navigate = useNavigate();
+
+    userlogged = props.username ? props.username : userlogged;
+    urlProfile = props.urlProfile ? props.urlProfile : urlProfile;
+
     const handleSingout = (
         event: React.MouseEvent<HTMLElement> 
       ) => {
@@ -84,7 +93,7 @@ function LoggedBarPage() {
                             ":hover": { color: "#ffccbc" }
                         }}
                     >
-                        Bienvenido "nombreUsuario"
+                        Hola, {userlogged}
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -141,7 +150,7 @@ function LoggedBarPage() {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar alt="Remy Sharp" src={urlProfile} />
                             </IconButton>
                         </Tooltip>
                         <Menu
