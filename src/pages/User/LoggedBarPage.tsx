@@ -6,16 +6,13 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar'; 
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import { Fingerprint } from '@mui/icons-material';
+import MenuItem from '@mui/material/MenuItem'; 
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
-import { firebaseAuth } from '../../services/Firebase/FirebaseService'; 
-import HomePage from '../home/HomePage';
+import { firebaseAuth } from '../../services/Firebase/FirebaseService';  
 
 const defaultusername: string = "'Persona Misteriosa'";
 let userlogged: string;
@@ -141,7 +138,7 @@ function LoggedBarPage(props: any) {
                             }}
                         >
                             {pages.map((page) => (
-                                <MenuItem key={page.name} onClick={(e) => handlePage(page.site)}>
+                                <MenuItem key={page.name} onClick={(e) => {console.log(e); handlePage(page.site)}}>
                                     <Typography textAlign="inherit" sx={{
                                         ":hover": { color: "#6b9080" }
                                     }} >{page.name}</Typography>
@@ -155,7 +152,7 @@ function LoggedBarPage(props: any) {
                             <Tooltip title={page.tooltip}>
                                 <IconButton
                                 key={page.name}
-                                onClick={(e) => handlePage(page.site)}
+                                onClick={(e) => {console.log(e); handlePage(page.site)}}
                                 sx={{ my: 0, color: 'white', display: 'inline', ":hover": { color: "#ffccbc" } }}
                             >
                                 {page.name}

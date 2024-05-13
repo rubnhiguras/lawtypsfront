@@ -5,7 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth, firebaseDatabase, firebaseStorage } from '../../services/Firebase/FirebaseService';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
-import { Alert, AlertColor, AlertPropsColorOverrides, Backdrop, Button, CircularProgress, Slide, Snackbar } from '@mui/material';
+import { Alert, AlertColor, Backdrop, Button, CircularProgress, Slide, Snackbar } from '@mui/material';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 
 
