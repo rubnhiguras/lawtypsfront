@@ -7,3 +7,9 @@
 .button-section .button-section-element  { 
   margin: 1rem auto;
 }
+
+#registercard{
+  display: inline-block;
+  max-width: 500px;
+  margin-top: 0rem;
+}

@@ -9,55 +9,74 @@ import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';  
+import MenuItem from '@mui/material/MenuItem';
 import { Fingerprint } from '@mui/icons-material';
-import { onAuthStateChanged, signOut } from 'firebase/auth'; 
-import { useNavigate } from 'react-router-dom'; 
+import { signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
-import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
-import { collection, doc, getDoc } from 'firebase/firestore';
-import { Backdrop, CircularProgress } from '@mui/material';
+import { firebaseAuth } from '../../services/Firebase/FirebaseService'; 
+import HomePage from '../home/HomePage';
 
-let userlogged: string = "'Persona Misteriosa'"; 
-let urlProfile: string = "https://i.seadn.io/gae/Ihufw_BbfNUhFBD-XF74FlY2JjpYeUkkTdhzJy_bjEdfz0qKlLMOkxlUKxyJR7ib5dgsji9XZAMuorSX20Fw12q5XZ2LJTj2efcS?auto=format&dpr=1&w=1000"; 
+const defaultusername: string = "'Persona Misteriosa'";
+let userlogged: string;
+let urlProfile: string;
+let settingsTooltip: string = "Espacio personal";
 
-function LoggedBarPage(props: any){
+function LoggedBarPage(props: any) {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const navigate = useNavigate();
 
-    userlogged = props.username ? props.username : userlogged;
-    urlProfile = props.urlProfile ? props.urlProfile : urlProfile;
+    const userLoggedTrim = (username: string) => {
+        let result = username;
+        const userloggedLength = defaultusername.length;
+        let resultLength = result.length;
+        let diff = userloggedLength - resultLength;
+        if (diff > 0) {
+            while (diff > 0) {
+                result = result + ' ';
+                resultLength = result.length;
+                diff = userloggedLength - resultLength;
+            }
+        } else if (diff < 0) {
+            result = result.substring(0, userloggedLength - (-diff)) + '...';
+        }
+        return result;
+    }
 
     const handleSingout = (
-        event: React.MouseEvent<HTMLElement> 
-      ) => {
-        console.log(event);
+        event: React.MouseEvent<HTMLElement>
+    ) => {
         signOut(firebaseAuth).then(() => {
-        // Sign-out successful.
+            // Sign-out successful.
             navigate("/");
-            console.log("Signed out successfully");
+            console.log(event, "Signed out successfully");
         }).catch((error) => {
-            console.log("Signed out with error");
+            console.log(event, "Signed out with error");
             console.log(error);
-        // An error happened.
+            // An error happened.
         });
     }
 
     const handleNothing = (
-        event: React.MouseEvent<HTMLElement> 
-      ) => {
+        event: React.MouseEvent<HTMLElement>
+    ) => {
         console.log(event);
     }
 
     const pages = [
-        {name:'Casos', site:"/login"},
-        {name:'Precios', site:"/login"}];
+        { name: 'Inicio', site: "/home", tooltip: "Bienvenida" },
+        { name: 'Casos', site: "/login", tooltip: "Página de casos (abogados)" },
+        { name: 'Abogados', site: "/login", tooltip: "Página de abogados (clientes)"  }
+    ];
 
     const settings = [
-        {name:'Perfil', action: handleNothing}, 
-        {name:'Facturación', action: handleNothing},
-        {name:'Log out', action: handleSingout}
+        { name: `${userlogged}`, action: handleNothing, tooltip: `Configuración y datos de ${userlogged}` },
+        { name: 'Facturación', action: handleNothing, tooltip: "Página de facturación (abogados & clientes)"  },
+        { name: 'Clientes', action: handleNothing, tooltip: "Página de clientes (abogados)"  },
+        { name: 'Precios', action: handleNothing, tooltip: "Página de precios (abogados)"  },
+        { name: 'Abogados', action: handleNothing, tooltip: "Página de abogados (clientes)"  },
+        { name: 'Log out', action: handleSingout, tooltip: "Cerras sesión"  }
     ];
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -75,27 +94,23 @@ function LoggedBarPage(props: any){
         setAnchorElUser(null);
     };
 
+    const handlePage = (path: string) => {
+        if(path == '/home'){
+            location.href = path;
+        }else{
+            //TODO change content in loggedContentPage
+        }
+    }
+
+
+
+    userlogged = props.username ? userLoggedTrim(props.username) : userlogged;
+    urlProfile = props.urlProfile ? props.urlProfile : urlProfile;
+
     return (
         <AppBar position="static" sx={{ bgcolor: "#6b9080", borderRadius: "40px" }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
-                    <Fingerprint sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="a"
-                        href="#app-bar-with-responsive-menu"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'none', md: 'flex' },
-                            color: 'inherit',
-                            textDecoration: 'none',
-                            ":hover": { color: "#ffccbc" }
-                        }}
-                    >
-                        Hola, {userlogged}
-                    </Typography>
-
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
@@ -126,8 +141,8 @@ function LoggedBarPage(props: any){
                             }}
                         >
                             {pages.map((page) => (
-                                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center" sx={{
+                                <MenuItem key={page.name} onClick={(e) => handlePage(page.site)}>
+                                    <Typography textAlign="inherit" sx={{
                                         ":hover": { color: "#6b9080" }
                                     }} >{page.name}</Typography>
                                 </MenuItem>
@@ -135,22 +150,24 @@ function LoggedBarPage(props: any){
                         </Menu>
                     </Box>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex', marginLeft: '55%' } }}>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                         {pages.map((page) => (
-                            <Button
+                            <Tooltip title={page.tooltip}>
+                                <IconButton
                                 key={page.name}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block', ":hover": { color: "#ffccbc" }}}
+                                onClick={(e) => handlePage(page.site)}
+                                sx={{ my: 0, color: 'white', display: 'inline', ":hover": { color: "#ffccbc" } }}
                             >
                                 {page.name}
-                            </Button>
+                            </IconButton>
+                            </Tooltip>  
                         ))}
                     </Box>
 
                     <Box sx={{ flexGrow: 0 }}>
-                        <Tooltip title="Open settings">
+                        <Tooltip title={settingsTooltip}>
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src={urlProfile} />
+                                <Avatar alt={userlogged} src={urlProfile} />
                             </IconButton>
                         </Tooltip>
                         <Menu
@@ -170,17 +187,19 @@ function LoggedBarPage(props: any){
                             onClose={handleCloseUserMenu}
                         >
                             {settings.map((setting) => (
-                                <MenuItem key={setting.name} onClick={(event) => setting.action(event)} sx={{
-                                    ":hover": { color: "#6b9080" }
-                                }} >
-                                    <Typography textAlign="center">{setting.name}</Typography>
-                                </MenuItem>
+                                <Tooltip title={setting.tooltip}>
+                                    <MenuItem key={setting.name} onClick={(event) => setting.action(event)} sx={{
+                                        ":hover": { color: "#6b9080" }, p: 2
+                                    }} >
+                                        <Typography textAlign="center">{setting.name}</Typography>
+                                    </MenuItem>
+                                </Tooltip>
                             ))}
                         </Menu>
                     </Box>
                 </Toolbar>
             </Container>
-        </AppBar> 
+        </AppBar>
     );
 }
 

@@ -8,6 +8,10 @@ import { collection, doc, setDoc } from 'firebase/firestore';
 import { UserModel } from '../../services/UserModel/UserModel';
 import { firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
 
+const defaultAvatarUrlUn: string = "https://www.limonium.org/wp-content/uploads/2023/08/default-avatar.webp";
+const defaultAvatarUrlFe: string = "https://www.svgrepo.com/show/10678/avatar.svg"
+const defaultAvatarUrlMa: string = "https://www.svgrepo.com/show/61986/avatar.svg"
+
 const RegisterPage: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [email, setEmail] = useState('');
@@ -15,6 +19,8 @@ const RegisterPage: React.FC = () => {
   const [passwordCheck, setPasswordCheck] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
+  const [gender, setGender] = useState('');
+  const [genderDetail, setGenderDetail] = useState('');
   const navigate = useNavigate();
 
   onAuthStateChanged(firebaseAuth, (user) => {
@@ -35,12 +41,26 @@ const RegisterPage: React.FC = () => {
     // Después de la autenticación exitosa, redirige al usuario a la página de inicio
     setOpen(true);
     if (email && name && password && role) {
+      let urlProfile: string;
+      let genderToStore: string;
+      if(gender === 'Masculino') {
+         urlProfile = defaultAvatarUrlMa;
+         genderToStore = gender;
+      }else if(gender === 'Femenino') {
+        urlProfile = defaultAvatarUrlFe;
+        genderToStore = gender;
+      }else{
+        urlProfile = defaultAvatarUrlUn;
+        genderToStore = genderDetail;
+      }
       createUserWithEmailAndPassword(firebaseAuth, email, password)
         .then(credential => {
           const userData: UserModel = new UserModel(
             name,
             email,
             role,
+            genderToStore,
+            urlProfile,
             credential.user.uid
           );
           const usersCollection = collection(firebaseDatabase, 'users');
@@ -77,8 +97,16 @@ const RegisterPage: React.FC = () => {
     { name: 'Administrador', code: 'AD' }
   ];
 
+  const genders = [
+    { name: 'Masculino', code: 'MA' },
+    { name: 'Femenino', code: 'FE' },
+    { name: 'Mejor dicho...', code: 'UN' }
+  ];
+
+  const genderDetailHTML = <TextField sx={{ width: '20ch' }} id="gender-detail-basic" label="Gender" variant="standard" value={genderDetail} onChange={(e) => (setGenderDetail(e.target.value))} />;
+  
   return (
-    <Card sx={{ marginTop: 20, minWidth: 200, borderRadius: "40px" }}>
+    <Card id="registercard" sx={{ marginTop: 20, minWidth: 200, borderRadius: "40px" }}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
@@ -114,6 +142,26 @@ const RegisterPage: React.FC = () => {
                 ))}
               </TextField>
             </div>
+            <div>
+              <TextField sx={{ width: '20ch' }}
+                select
+                label="Gender"
+                value={gender}
+                onChange={(e) => (setGender(e.target.value))}
+                variant="standard"
+              >
+                {genders.map((gender) => (
+                  <MenuItem key={gender.code} value={gender.name}>
+                    {gender.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </div>
+
+            <div >
+              { gender === 'Mejor dicho...' ? genderDetailHTML : ""} 
+            </div>
+
             <div>
               <TextField id="Password-basic" label="Password" variant="standard" type="password" value={password} onChange={(e) => (setPassword(e.target.value))} />
             </div>
