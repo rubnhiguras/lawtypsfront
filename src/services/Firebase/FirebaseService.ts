@@ -13,13 +13,13 @@ import { getStorage } from "firebase/storage";
 // CONST SHOULD BE EMPTY IN REPO !!
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 const firebaseConfig = {
-    apiKey: " ",
-    authDomain: " ",
-    projectId: " ",
-    storageBucket: " ",
-    messagingSenderId: " ",
-    appId: " ",
-    measurementId: " "
+    apiKey: "AIzaSyCBkRl-wRWaN-E0VKdC3Mtgn0DYwihsl38",
+    authDomain: "lawtyps.firebaseapp.com",
+    projectId: "lawtyps",
+    storageBucket: "lawtyps.appspot.com",
+    messagingSenderId: "585598118619",
+    appId: "1:585598118619:web:50ad7aac93cd89bc3abafe",
+    measurementId: "G-L0JNS9MHCG"
 };
 
 // Initialize Firebase
