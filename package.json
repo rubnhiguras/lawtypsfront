@@ -1,13 +1,10 @@
 {
-  "name": "lawtypsfront", 
-  "homepage": "https://rubnhiguras.github.io/lawtypsfront/",
-  "version": "0.1.0",
-  "private": false, 
+  "name": "lawtypsfront",
+  "private": false,
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
