@@ -106,7 +106,7 @@ const LoginPage: React.FC = () => {
               </Tooltip>
             </CardActions>
             <div>
-              ¿Esto es nuevo? <br /><a href='./Register'>Crear una cuenta</a>
+              ¿Esto es nuevo? <br /><a href='/Register'>Crear una cuenta</a>
             </div>
           </FormControl>
 
