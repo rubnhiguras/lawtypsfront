@@ -15,8 +15,8 @@ function App() {
     <> 
     <BrowserRouter>
       <Routes>
-        <Route index path='/' element={<HomePage version={version}/>} key="home"  />
-        <Route path='Home' element={<HomePage version={version}/>} key="home"  />
+        <Route index path='/' element={<HomePage />} key="home"  />
+        <Route path='Home' element={<HomePage />} key="home"  />
         <Route path='Login' element={<LoginPage />} key="login"  />
         <Route path='Register' element={<RegisterPage />} key="register"  />
         <Route path='User' element={<LoggedContentPage />} key="user" />

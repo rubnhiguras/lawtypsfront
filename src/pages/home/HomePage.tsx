@@ -2,7 +2,7 @@ import React from 'react';
 import './HomePage.css'
 import packageJson from '../../../package.json';
 
-const HomePage: React.FC<{ version: string }> = (versionP) => {
+const HomePage: React.FC = () => {
 
     document.title = document.title = packageJson.title + ' ' + 'Home';
 
