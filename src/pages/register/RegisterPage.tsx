@@ -32,7 +32,7 @@ const RegisterPage: React.FC = () => {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/firebase.User 
       //navigate("/user");
-      window.location.href = './User';
+      window.location.href = '/User';
     } else {
       // User is signed out
       // ...
@@ -85,7 +85,7 @@ const RegisterPage: React.FC = () => {
   const handleBack = () => {
     // Aquí puedes agregar la lógica de vuelta a la page anterior
     // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
-    window.location.href = './Login';
+    window.location.href = '/Login';
     //navigate('/Login');
   };
 

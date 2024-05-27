@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
     if (user) {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/firebase.User 
-      window.location.href = './User';
+      window.location.href = '/User';
       //navigate("/user");
     } else {
       // User is signed out
@@ -59,7 +59,7 @@ const LoginPage: React.FC = () => {
     // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
 
     //navigate('/');
-    window.location.href = './Home';
+    window.location.href = '/Home';
   };
 
   function CustomErrorAlert() {
