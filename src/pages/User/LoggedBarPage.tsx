@@ -46,7 +46,7 @@ function LoggedBarPage(props: any) {
     ) => {
         signOut(firebaseAuth).then(() => {
             // Sign-out successful. 
-            window.location.href = './Home';
+            window.location.href = '/Home';
             console.log(event, "Signed out successfully");
         }).catch((error) => {
             console.log(event, "Signed out with error");

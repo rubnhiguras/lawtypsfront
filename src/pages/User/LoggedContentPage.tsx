@@ -45,7 +45,7 @@ function LoggedContentPage() {
                 });
 
         } else {
-            window.location.href = './Login';
+            window.location.href = '/Login';
             //navigate("/login");
         }
 
