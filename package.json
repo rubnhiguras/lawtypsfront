@@ -1,7 +1,8 @@
 {
   "name": "lawtypsfront",
+  "title": "Lawtyps App",
   "private": false,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,7 +14,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@material/web": "^1.4.1",
-    "@mui/icons-material": "^5.15.15",
+    "@mui/icons-material": "^5.15.18",
     "@mui/material": "^5.15.15",
     "firebase": "^10.11.1",
     "firebase-tools": "^13.8.3",

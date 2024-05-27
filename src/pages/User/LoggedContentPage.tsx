@@ -4,13 +4,13 @@ import LoggedBarPage from './LoggedBarPage';
 import { onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuth, firebaseDatabase, firebaseStorage } from '../../services/Firebase/FirebaseService';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { Alert, AlertColor, Backdrop, Button, CircularProgress, Slide, Snackbar } from '@mui/material';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-
+import packageJson from '../../../package.json';
 
 function LoggedContentPage() {
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [urlProfile, setUrlProfile] = useState('');
     const [UidUser, setUidUser] = useState('');
@@ -22,6 +22,8 @@ function LoggedContentPage() {
     const [openResultUpload, setOpenResultUpload] = useState(false);
     const [messageUpload, setMessageUpload] = useState(''); 
     const [severityMessage, setSeverityMessage] = useState<AlertColor>(); 
+
+    document.title = document.title = packageJson.title + ' ' + name;
 
     onAuthStateChanged(firebaseAuth, (user) => {
         if (user) {
@@ -43,7 +45,8 @@ function LoggedContentPage() {
                 });
 
         } else {
-            navigate("/login");
+            window.location.href = './Login';
+            //navigate("/login");
         }
 
     });

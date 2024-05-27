@@ -10,7 +10,7 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem'; 
 import { signOut } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import { firebaseAuth } from '../../services/Firebase/FirebaseService';  
 
@@ -22,7 +22,7 @@ let settingsTooltip: string = "Espacio personal";
 function LoggedBarPage(props: any) {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const userLoggedTrim = (username: string) => {
         let result = username;
@@ -45,8 +45,8 @@ function LoggedBarPage(props: any) {
         event: React.MouseEvent<HTMLElement>
     ) => {
         signOut(firebaseAuth).then(() => {
-            // Sign-out successful.
-            navigate("/");
+            // Sign-out successful. 
+            window.location.href = './Home';
             console.log(event, "Signed out successfully");
         }).catch((error) => {
             console.log(event, "Signed out with error");
@@ -62,9 +62,9 @@ function LoggedBarPage(props: any) {
     }
 
     const pages = [
-        { name: 'Inicio', site: "/home", tooltip: "Bienvenida" },
-        { name: 'Casos', site: "/login", tooltip: "Página de casos (abogados)" },
-        { name: 'Abogados', site: "/login", tooltip: "Página de abogados (clientes)"  }
+        { name: 'Inicio', site: "/Home", tooltip: "Bienvenida" },
+        { name: 'Casos', site: "/Login", tooltip: "Página de casos (abogados)" },
+        { name: 'Abogados', site: "/Login", tooltip: "Página de abogados (clientes)"  }
     ];
 
     const settings = [
@@ -92,8 +92,8 @@ function LoggedBarPage(props: any) {
     };
 
     const handlePage = (path: string) => {
-        if(path == '/home'){
-            location.href = path;
+        if(path == '/Home'){
+            window.location.href = path;
         }else{
             //TODO change content in loggedContentPage
         }
