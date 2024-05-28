@@ -25,7 +25,7 @@ const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [gender, setGender] = useState('');
-  const [genderDetail, setGenderDetail] = useState('none'); 
+  const [genderDetail, setGenderDetail] = useState('Mejor dicho...'); 
   const [error, setError] = useState('');
 
   onAuthStateChanged(firebaseAuth, (user) => {
@@ -71,6 +71,8 @@ const RegisterPage: React.FC = () => {
             }).catch((error) => {
               setError("¡Ups, algo no ha ido bien! " + error.message);
             }).finally(() => { setOpen(false); });
+        }).catch((error) => {
+          setError("¡Ups, algo no ha ido bien! " + error.message);
         });
     }else{
       setOpen(false);
@@ -125,7 +127,7 @@ const RegisterPage: React.FC = () => {
     { name: 'Mejor dicho...', code: 'UN' }
   ];
 
-  const genderDetailHTML = <TextField sx={{ width: '20ch' }} id="gender-detail-basic" label="Gender" variant="standard" value={genderDetail==='none' ? '' : genderDetail} onChange={(e) => (setGenderDetail(e.target.value))} onKeyDown={onKeyDown}/>;
+  const genderDetailHTML = <TextField sx={{ width: '20ch' }} id="gender-detail-basic" label="Gender" variant="standard" value={genderDetail==='Mejor dicho...' ? '' : genderDetail} onChange={(e) => (setGenderDetail(e.target.value))} onKeyDown={onKeyDown}/>;
   
   function CustomErrorAlert() {
     if (error.length > 0) {
