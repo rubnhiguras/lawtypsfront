@@ -1,0 +1,11 @@
+.Mui-selected{
+    background-color: #6b9080 !important;
+    color: white !important;
+} 
+
+#mainnavbar .Mui-selected{
+    border: solid;
+    border-color: white;
+    border-radius: 80px;
+    color: white;
+}

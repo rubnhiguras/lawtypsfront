@@ -4,24 +4,22 @@ import './LoginPage.css'
 import Button from '@mui/material/Button';
 import { Alert, Backdrop, Box, Card, CardActions, CardContent, CircularProgress, FormControl, TextField, Tooltip } from '@mui/material';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
-import { firebaseAuth } from '../../services/Firebase/FirebaseService';
+import { firebaseAuth, EMAIL_COND_REGEX } from '../../services/Firebase/FirebaseService';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LoginIcon from '@mui/icons-material/Login';
 import packageJson from '../../../package.json';
+import { FirebaseError } from 'firebase/app';
 
 const LoginPage: React.FC = () => {
-
   document.title = document.title = packageJson.title + ' ' + 'Login';
 
   const [email, setEmail] = useState('');
-  const [open, setOpen] = useState(false);
   const [password, setPassword] = useState('');
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
+  const [open, setOpen] = useState(false); 
 
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/firebase.User 
       window.location.href = '/User';
       //navigate("/user");
     } else {
@@ -37,27 +35,31 @@ const LoginPage: React.FC = () => {
   };
 
   const handleLogin = () => {
-    // Aquí puedes agregar la lógica de autenticación
-    // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
-
-    // Después de la autenticación exitosa, redirige al usuario a la página de inicio
     setOpen(true);
-    if (email && password) {
-      checkLogInfo().finally(() => setOpen(false));
+    const able = checkPassword() && checkEmail();
+    if(able){
+      if (email && password) {
+        setError("")
+        checkLogInfo().finally(() => setOpen(false));
+      }
+    }else{
+      setError("La contraseña o el email no tienen el formato correcto.")
+      setOpen(false);
     }
   };
 
   const checkLogInfo = async () => {
     try {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
-    } catch (errorLaunched) {
-      setError("Error en el login: " + errorLaunched);
+    } catch (errorLaunched: FirebaseError | any) {
+      if(errorLaunched.message.includes("invalid-credential")){
+        setError("Credenciales incorrectas");
+      }else{
+        setError("Error en el login: " + errorLaunched)
+      };
     }
   }
   const handleBack = () => {
-    // Aquí puedes agregar la lógica de vuelta a la page anterior
-    // Por ejemplo, hacer una solicitud a un servidor para verificar las credenciales
-
     //navigate('/');
     window.location.href = '/Home';
   };
@@ -69,6 +71,14 @@ const LoginPage: React.FC = () => {
       return <p></p>;
     }
 
+  }
+
+  function checkPassword(): boolean {
+    return password.length > 6;
+  }
+
+  function checkEmail(): boolean { 
+    return EMAIL_COND_REGEX.test(email);
   }
 
   return (
@@ -84,7 +94,6 @@ const LoginPage: React.FC = () => {
         <Box sx={{ minWidth: 99 }}>
 
           <FormControl component="form" sx={{ '& > :not(style)': { m: 0.4, width: '28ch' }, }}
-            noValidate
             autoComplete="off"
           >
             <div>
@@ -102,7 +111,7 @@ const LoginPage: React.FC = () => {
                 <Button variant="contained" onClick={handleBack} color="info" className='button-section-element' startIcon={<ArrowBackIcon />} />
               </Tooltip>
               <Tooltip title="Iniciar sesión">
-                <Button variant="contained" onClick={handleLogin} onSubmit={handleLogin} color="success" className='button-section-element' startIcon={<LoginIcon />} />
+                <Button variant="contained" onClick={handleLogin} color="success" className='button-section-element' startIcon={<LoginIcon />} />
               </Tooltip>
             </CardActions>
             <div>
@@ -116,4 +125,5 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default LoginPage; 
+

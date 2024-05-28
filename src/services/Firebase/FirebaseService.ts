@@ -22,6 +22,8 @@ const firebaseConfig = {
     measurementId: "G-L0JNS9MHCG"
 };
 
+export const EMAIL_COND_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAnalytics = getAnalytics(firebaseApp);
