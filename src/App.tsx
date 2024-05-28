@@ -20,8 +20,7 @@ function App() {
         <Route path='Home' element={<HomePage />} key="home"  />
         <Route path='Login' element={<LoginPage />} key="login"  />
         <Route path='Register' element={<RegisterPage />} key="register"  />
-        <Route path='User' element={<LoggedContentPage />} key="user" />
-        <Route path='User/*' element={<LoggedContentPage />} key="user" />
+        <Route path='User/*' element={<LoggedContentPage />} key="user" /> 
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

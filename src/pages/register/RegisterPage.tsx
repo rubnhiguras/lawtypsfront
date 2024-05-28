@@ -18,7 +18,7 @@ const RegisterPage: React.FC = () => {
 
   document.title = document.title = packageJson.title + ' ' + 'Register';
 
-  const [open, setOpen] = React.useState(false);
+  const [openSpinner, setOpenSpinner] = React.useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -39,7 +39,7 @@ const RegisterPage: React.FC = () => {
   }); 
 
   const handleLogin = () => {
-    setOpen(true);
+    setOpenSpinner(true);
     const able = checkPassword() && checkEmail() && checkName() && checkRole();
     if (able) {
       let urlProfile: string;
@@ -70,12 +70,12 @@ const RegisterPage: React.FC = () => {
               console.log(ref);
             }).catch((error) => {
               setError("¡Ups, algo no ha ido bien! " + error.message);
-            }).finally(() => { setOpen(false); });
+            }).finally(() => { setOpenSpinner(false); });
         }).catch((error) => {
           setError("¡Ups, algo no ha ido bien! " + error.message);
-        });
+        }).finally(() => { setOpenSpinner(false); });
     }else{
-      setOpen(false);
+      setOpenSpinner(false);
     };
   };
 
@@ -141,7 +141,7 @@ const RegisterPage: React.FC = () => {
     <Card id="registercard" sx={{ marginTop: 0.4, minWidth: 100, borderRadius: "40px" }}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
+        open={openSpinner}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -149,7 +149,7 @@ const RegisterPage: React.FC = () => {
         <h2>Register</h2>
         <Box sx={{ minWidth: 99 }}>
           <FormControl component="form" sx={{ '& > :not(style)': { m: 0.4, width: '29.5ch' }, }} 
-            autoComplete="off"
+            autoComplete="off" noValidate
           >
             <div>
               <TextField id="Email-basic" label="Email" variant="standard" type="email" value={email} onChange={(e) => (setEmail(e.target.value))} 

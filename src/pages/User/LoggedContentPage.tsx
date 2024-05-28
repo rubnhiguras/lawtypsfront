@@ -12,7 +12,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import packageJson from '../../../package.json';
 import PasswordIcon from '@mui/icons-material/Password';
 
-function LoggedContentPage() {
+const LoggedContentPage: React.FC = () => {
     //const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [passwordAlert, setPasswordAlert] = useState(false);
