@@ -14,7 +14,7 @@ import { signOut } from 'firebase/auth';
 import React from 'react';
 import { firebaseAuth } from '../../services/Firebase/FirebaseService';  
 import './User.css'
-import { Dialog, DialogContent, DialogTitle } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
 const defaultusername: string = "'Persona Misteriosa'";
 let userlogged: string;
@@ -25,6 +25,7 @@ function LoggedBarPage(props: any) {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [avatarDialog, setAvatarDialog] = React.useState(false); 
+    const [closeSessionDialog, setCloseSessionDialog] = React.useState(false); 
     //const navigate = useNavigate();
 
     const userLoggedTrim = (username: string) => {
@@ -44,19 +45,23 @@ function LoggedBarPage(props: any) {
         return result;
     }
 
+    function logoutsession(){
+        signOut(firebaseAuth).then(() => {
+            // Sign-out successful. 
+            window.location.href = '/Home';
+            console.log(event, "Signed out successfully");
+        }).catch((error) => {
+            console.log(event, "Signed out with error");
+            console.log(error);
+            // An error happened.
+        });
+    }
+
     const handleChangePage = (
        page: string
     ) => {
-        if(page === 'setlogout'){
-            signOut(firebaseAuth).then(() => {
-                // Sign-out successful. 
-                window.location.href = '/Home';
-                console.log(event, "Signed out successfully");
-            }).catch((error) => {
-                console.log(event, "Signed out with error");
-                console.log(error);
-                // An error happened.
-            });
+        if(page === '/User/setlogout/'){
+            showCloseSessionDialog();
         }else{
             handlePage(page);
         } 
@@ -110,6 +115,14 @@ function LoggedBarPage(props: any) {
 
     function hideAvatar(): void { 
         setAvatarDialog(false);
+    }
+
+    function showCloseSessionDialog(): void { 
+        setCloseSessionDialog(true);
+    }
+
+    function hideCloseSessionDialog(): void { 
+        setCloseSessionDialog(false);
     }
 
     return (
@@ -186,6 +199,22 @@ function LoggedBarPage(props: any) {
                             <DialogContent id="avatar-dialog-content">
                                 <Avatar alt={userlogged} src={urlProfile} variant="rounded" sx={{ width: 550, height: 550 }}/>
                             </DialogContent>
+                        </Dialog>
+
+                        <Dialog
+                            open={closeSessionDialog}
+                            onClose={hideCloseSessionDialog}
+                        > 
+                            <DialogTitle id="avatar-dialog-title">
+                                Cerrando sesión...
+                            </DialogTitle>
+                            <DialogContent id="avatar-dialog-content">
+                                Se va a cerrar la sesión.
+                            </DialogContent>
+                            <DialogActions>
+                                <Button sx={{color: "red"}} onClick={hideCloseSessionDialog} autoFocus>Mejor no, cancelar</Button>
+                                <Button sx={{color: "#6b9080"}} onClick={logoutsession}>Si, cerrar sesión</Button>
+                            </DialogActions>
                         </Dialog>
 
                         <Menu

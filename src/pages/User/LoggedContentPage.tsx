@@ -27,7 +27,7 @@ function LoggedContentPage() {
     const [messageUpload, setMessageUpload] = useState('');
     const [severityMessage, setSeverityMessage] = useState<AlertColor>();
     const [error, setError] = useState('');
-    const [genderDetail, setGenderDetail] = useState('none');
+    const [genderDetail, setGenderDetail] = useState('Mejor dicho...');
     const [updatedData, setUpdatedData] = useState(false); 
 
     document.title = document.title = packageJson.title + ' ' + name;
