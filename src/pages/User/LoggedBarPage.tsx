@@ -63,18 +63,18 @@ function LoggedBarPage(props: any) {
     }
 
     const pages = [
-        {   name: 'Inicio', site: "/Home", tooltip: "Bienvenida" },
-        {   name: 'Casos', site: "/User/casos", tooltip: "Página de casos (abogados)" },
-        {   name: 'Abogados', site: "/User/abogados", tooltip: "Página de abogados (clientes)"  }
+        {   name: 'Inicio', site: "/Home/", tooltip: "Bienvenida" },
+        {   name: 'Casos', site: "/User/casos/", tooltip: "Página de casos (abogados)" },
+        {   name: 'Abogados', site: "/User/abogados/", tooltip: "Página de abogados (clientes)"  }
     ];
 
     const settings = [
-        { site: '/User', name: `${userlogged}`,  tooltip: `Configuración y datos de ${userlogged}` },
-        { site: '/User/setfactur', name: 'Facturación', tooltip: "Página de facturación (abogados & clientes)"  },
-        { site: '/User/setclient', name: 'Clientes', tooltip: "Página de clientes (abogados)"  },
-        { site: '/User/setprecio', name: 'Precios', tooltip: "Página de precios (abogados)"  },
-        { site: '/User/setabogad', name: 'Abogados', tooltip: "Página de abogados (clientes)"  },
-        { site: '/User/setlogout', name: 'Log out', tooltip: "Cerras sesión"  }
+        { site: '/User/', name: `${userlogged}`,  tooltip: `Configuración y datos de ${userlogged}` },
+        { site: '/User/setfactur/', name: 'Facturación', tooltip: "Página de facturación (abogados & clientes)"  },
+        { site: '/User/setclient/', name: 'Clientes', tooltip: "Página de clientes (abogados)"  },
+        { site: '/User/setprecio/', name: 'Precios', tooltip: "Página de precios (abogados)"  },
+        { site: '/User/setabogad/', name: 'Abogados', tooltip: "Página de abogados (clientes)"  },
+        { site: '/User/setlogout/', name: 'Log out', tooltip: "Cerras sesión"  }
     ];
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -97,10 +97,7 @@ function LoggedBarPage(props: any) {
     }
 
     function selectedPage(param: string): boolean{
-        const fullPath = window.location.pathname;
-        console.log(fullPath);
-        console.log(param);
-        console.log(fullPath === param);
+        const fullPath = window.location.pathname; 
         return fullPath === param; 
     }
 
