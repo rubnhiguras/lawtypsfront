@@ -99,6 +99,8 @@ function LoggedBarPage(props: any) {
     function selectedPage(param: string): boolean{
         const fullPath = window.location.pathname;
         console.log(fullPath);
+        console.log(param);
+        console.log(fullPath === param);
         return fullPath === param; 
     }
 
