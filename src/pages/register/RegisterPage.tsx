@@ -49,11 +49,12 @@ const RegisterPage: React.FC = () => {
     const able = checkEmail() && checkName() && checkRole() && checkPassword();
     if (able) { 
       let genderToStore: string = gender; 
-      let urlProfile: string = defaultAvatarUrlMa; 
+      let urlProfile: string = defaultAvatarUrlUn; 
       if (gender === 'Femenino') {
         urlProfile = defaultAvatarUrlFe;
-      } else {
-        urlProfile = defaultAvatarUrlUn;
+      } else if (gender === 'Masculino') {
+        urlProfile = defaultAvatarUrlMa;
+      } else { 
         genderToStore = genderDetail;
       }
 
