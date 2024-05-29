@@ -79,6 +79,7 @@ function LoggedBarPage(props: any) {
         { site: '/User/setclient/', name: 'Clientes', tooltip: "Página de clientes (abogados)"  },
         { site: '/User/setprecio/', name: 'Precios', tooltip: "Página de precios (abogados)"  },
         { site: '/User/setabogad/', name: 'Abogados', tooltip: "Página de abogados (clientes)"  },
+        { site: '/Register', name: 'Nuevo usuario', tooltip: "Página de creación de nuevo usuario (abogados & clientes)"  },
         { site: '/User/setlogout/', name: 'Log out', tooltip: "Cerras sesión"  }
     ];
 

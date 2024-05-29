@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
 
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user) {
-      window.location.href = '/User';
+      window.location.href = '/User/';
       //navigate("/user");
     } else {
       // User is signed out

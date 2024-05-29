@@ -14,8 +14,7 @@ import { UserModel } from '../../services/UserModel/UserModel';
 
 const LoggedContentPage: React.FC = () => {
     const [open, setOpen] = useState(false);
-    const [passwordAlert, setPasswordAlert] = useState(false);
-    const [urlProfile, setUrlProfile] = useState('');
+    const [passwordAlert, setPasswordAlert] = useState(false); 
     const [UidUser] = useState('');
     const [gender, setGender] = useState('');
     const [progress, setProgress] = useState(0);
@@ -76,21 +75,23 @@ const LoggedContentPage: React.FC = () => {
                     alert(error);
                 },
                 () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                        setUrlProfile(downloadURL);
-                        const userDoc = doc(firebaseDatabase, 'users', UidUser);
-                        updateDoc(userDoc, { 'urlAvatarProfile': urlProfile })
-                            .then(() => {
-                                setMessageUpload(name + ", el avatar del perfil se ha cambiado.")
-                                setSeverityMessage('success');
-                            }).catch((error) => {
-                                setMessageUpload(name + ", el avatar del perfil NO se ha podido cambiar: ERROR al actualizar:\n " + error.message)
-                                setSeverityMessage('error');
-                                setError(error.message);
-                            }).finally(() => {
-                                setProgress(100); setOpen(false); setProgress(0); setOpenResultUpload(true);
-                            });
-                    });
+                    if(dataUserExist){
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            setDataUserExist({ ...dataUserExist, urlAvatarProfile: downloadURL}); 
+                            const userDoc = doc(firebaseDatabase, 'users', dataUserExist.uuid);
+                            updateDoc(userDoc, { 'urlAvatarProfile': dataUserExist.urlAvatarProfile })
+                                .then(() => {
+                                    setMessageUpload(name + ", el avatar del perfil se ha cambiado.")
+                                    setSeverityMessage('success');
+                                }).catch((error) => {
+                                    setMessageUpload(name + ", el avatar del perfil NO se ha podido cambiar: ERROR al actualizar:\n " + error.message)
+                                    setSeverityMessage('error');
+                                    setError(error.message);
+                                }).finally(() => {
+                                    setProgress(100); setOpen(false); setProgress(0); setOpenResultUpload(true);
+                                });
+                        });
+                    }
                 }
             );
         }

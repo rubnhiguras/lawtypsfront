@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import './RegisterPage.css'
 import { Alert, Backdrop, Box, Button, Card, CardActions, CardContent, CircularProgress, FormControl, MenuItem, TextField, Tooltip } from '@mui/material';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'; 
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { UserModel } from '../../services/UserModel/UserModel';
-import { EMAIL_COND_REGEX, firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService'; 
+import { EMAIL_COND_REGEX, firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
 import packageJson from '../../../package.json';
 
 const defaultAvatarUrlUn: string = "https://www.limonium.org/wp-content/uploads/2023/08/default-avatar.webp";
@@ -25,86 +25,91 @@ const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [gender, setGender] = useState('');
-  const [genderDetail, setGenderDetail] = useState('Mejor dicho...'); 
-  const [error, setError] = useState('');
-
+  const [genderDetail, setGenderDetail] = useState('Mejor dicho...');
+  const [error, setError] = useState(''); 
+  const [infomsg, setInfomsg] = useState(''); 
+  
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user) {
-      //navigate("/user");
-      window.location.href = '/User';
+      //navigate("/user"); 
+      //setDataInDatabase(user.uid, urlProfile, genderToStore);
+      setInfomsg("Autenticado " + user.email );
     } else {
       // User is signed out
       // ...
     }
-  }); 
+  });
 
   const handleLogin = () => {
     setOpenSpinner(true);
     const able = checkEmail() && checkName() && checkRole() && checkPassword();
-    if (able) {
-      let urlProfile: string;
-      let genderToStore: string;
-      if(gender === 'Masculino') {
-         urlProfile = defaultAvatarUrlMa;
-         genderToStore = gender;
-      }else if(gender === 'Femenino') {
+    if (able) { 
+      let genderToStore: string = gender; 
+      let urlProfile: string = defaultAvatarUrlMa; 
+      if (gender === 'Femenino') {
         urlProfile = defaultAvatarUrlFe;
-        genderToStore = gender;
-      }else{
+      } else {
         urlProfile = defaultAvatarUrlUn;
         genderToStore = genderDetail;
       }
-      createUserWithEmailAndPassword(firebaseAuth, email, password)
+
+      createUserWithEmailAndPassword(firebaseAuth, email.trim(), password)
         .then(credential => {
-          const userData: UserModel = new UserModel(
-            name,
-            email,
-            role,
-            genderToStore,
-            urlProfile,
-            credential.user.uid
-          );
-          const usersCollection = collection(firebaseDatabase, 'users');
-          setDoc(doc(usersCollection, credential.user.uid), { ...userData })
-            .then(ref => {
-              console.info(ref);
-            }).catch((error) => {
-              console.error(error.message);
-              //setError("¡Ups, algo no ha ido bien! " + error.message);
-            }).finally(() => { setOpenSpinner(false); });
-        }).catch((error) => {
-          console.error(error.message);
+          setDataInDatabase(credential.user.uid, urlProfile, genderToStore);
+        }).catch(err => {
+          console.error(err.message);
           //setError("¡Ups, algo no ha ido bien! " + error.message);
         }).finally(() => { setOpenSpinner(false); });
-    }else{
+    } else {
       setOpenSpinner(false);
     };
   };
 
+  function setDataInDatabase(uid: string, urlProfile: string, genderToStore: string) {
+    const userData: UserModel = new UserModel(
+      name,
+      email,
+      role,
+      genderToStore,
+      urlProfile,
+      uid
+    );
+    const userDoc = doc(firebaseDatabase, "users", userData.uuid);
+    setDoc(userDoc, { ...userData })
+      .then(ref => {
+        console.info(ref);
+        window.location.href = '/User/';
+      }).catch((error) => {
+        console.error(error.message);
+        //setError("¡Ups, algo no ha ido bien! " + error.message);
+      }).finally(() => { setOpenSpinner(false); });
+
+  }
+
   function checkPassword(): boolean {
     const result = passwordCheck === password && password.length > 6;
     setError(result ? "" : "La contraseña debe tener al menos 6 caracteres y coincidir en ambos campos");
-    return result ;
+    return result;
   }
 
-  function checkEmail(): boolean { 
-    const result = EMAIL_COND_REGEX.test(email);
+  function checkEmail(): boolean {
+    const result = EMAIL_COND_REGEX.test(email.trim());
     setError(result ? "" : "No es un  correo válido");
     return result;
   }
 
-  function checkName(): boolean { 
+  function checkName(): boolean {
     const result = name.length > 2;
     setError(result ? "" : "No es un nombre válido");
     return result;
   }
-  
-  function checkRole(): boolean { 
+
+  function checkRole(): boolean {
     const result = role.length > 2;
     setError(result ? "" : "El rol es obligatorio");
-    return result; 
+    return result;
   }
-  
+
 
   const handleBack = () => {
     window.location.href = '/Login';
@@ -129,11 +134,19 @@ const RegisterPage: React.FC = () => {
     { name: 'Mejor dicho...', code: 'UN' }
   ];
 
-  const genderDetailHTML = <TextField sx={{ width: '20ch' }} id="gender-detail-basic" label="Gender" variant="standard" value={genderDetail==='Mejor dicho...' ? '' : genderDetail} onChange={(e) => (setGenderDetail(e.target.value))} onKeyDown={onKeyDown}/>;
-  
+  const genderDetailHTML = <TextField sx={{ width: '20ch' }} id="gender-detail-basic" label="Gender" variant="standard" value={genderDetail === 'Mejor dicho...' ? '' : genderDetail} onChange={(e) => (setGenderDetail(e.target.value))} onKeyDown={onKeyDown} />;
+
   function CustomErrorAlert() {
     if (error.length > 0) {
       return <Alert severity="error" >{error}</Alert>;
+    } else {
+      return <p></p>;
+    }
+  }
+
+  function CustomInfoAlert() {
+    if (infomsg.length > 0) {
+      return <Alert severity="info" >{infomsg}</Alert>;
     } else {
       return <p></p>;
     }
@@ -150,16 +163,17 @@ const RegisterPage: React.FC = () => {
       <CardContent>
         <h2>Nuevo&nbsp;usuario</h2>
         <Box sx={{ minWidth: 99 }}>
-          <FormControl component="form" sx={{ '& > :not(style)': { m: 0.4, width: '29.5ch' }, }} 
+          <FormControl component="form" sx={{ '& > :not(style)': { m: 0.4, width: '29.5ch' }, }}
             autoComplete="off" noValidate
           >
+             <CustomInfoAlert></CustomInfoAlert>
             <div>
-              <TextField id="Email-basic" label="Email" variant="standard" type="email" value={email} onChange={(e) => (setEmail(e.target.value))} 
-              onKeyDown={onKeyDown} required/>
+              <TextField id="Email-basic" label="Email" variant="standard" type="email" value={email} onChange={(e) => (setEmail(e.target.value))}
+                onKeyDown={onKeyDown} required />
             </div>
             <div>
-              <TextField id="Name-basic" label="Name" variant="standard" value={name} onChange={(e) => (setName(e.target.value))} 
-              onKeyDown={onKeyDown} required/>
+              <TextField id="Name-basic" label="Name" variant="standard" value={name} onChange={(e) => (setName(e.target.value))}
+                onKeyDown={onKeyDown} required />
             </div>
             <div>
               <TextField sx={{ width: '20ch' }}
@@ -196,28 +210,28 @@ const RegisterPage: React.FC = () => {
             </div>
 
             <div >
-              { gender === 'Mejor dicho...' ? genderDetailHTML : <br/>} 
+              {gender === 'Mejor dicho...' ? genderDetailHTML : <br />}
             </div>
 
             <div>
-              <TextField id="Password-basic" required label="Password" variant="standard" type="password" value={password} onChange={(e) => (setPassword(e.target.value))} onKeyDown={onKeyDown}/>
+              <TextField id="Password-basic" required label="Password" variant="standard" type="password" value={password} onChange={(e) => (setPassword(e.target.value))} onKeyDown={onKeyDown} />
             </div>
             <div>
-              <TextField id="PasswordCheck-basic" required label="Password Confirmation" variant="standard" type="password" value={passwordCheck} onChange={(e) => (setPasswordCheck(e.target.value))} onKeyDown={onKeyDown}/>
+              <TextField id="PasswordCheck-basic" required label="Password Confirmation" variant="standard" type="password" value={passwordCheck} onChange={(e) => (setPasswordCheck(e.target.value))} onKeyDown={onKeyDown} />
             </div>
             <div>
-              <small style={{textAlign: 'justify', marginLeft:-50}}>(*)Campos&nbsp;obligatorios</small>
+              <small style={{ textAlign: 'justify', marginLeft: -50 }}>(*)Campos&nbsp;obligatorios</small>
             </div>
             <CustomErrorAlert></CustomErrorAlert>
             <CardActions className='button-section'>
-            <Tooltip title="Volver">
-              <Button variant="contained" onClick={handleBack} color="info" className='button-section-element' startIcon={<ArrowBackIcon />} />
+              <Tooltip title="Volver">
+                <Button variant="contained" onClick={handleBack} color="info" className='button-section-element' startIcon={<ArrowBackIcon />} />
               </Tooltip>
               <Tooltip title="Registrar usuario e iniciar sesión">
-              <Button variant="contained" onClick={handleLogin} color="success" className='button-section-element' startIcon={<AppRegistrationIcon />} /> 
+                <Button variant="contained" onClick={handleLogin} color="success" className='button-section-element' startIcon={<AppRegistrationIcon />} />
               </Tooltip>
             </CardActions>
-            
+
           </FormControl>
         </Box>
       </CardContent>
