@@ -34,7 +34,7 @@ const RegisterPage: React.FC = () => {
     if (user) {
       //navigate("/user"); 
       //setDataInDatabase(user.uid, urlProfile, genderToStore);
-      if(user.email){
+      if(user.email && !userAuth){
         setUserAuth(user.email);
       }
     } else {
@@ -149,7 +149,7 @@ const RegisterPage: React.FC = () => {
   }
 
   function CustomInfoAlert() {
-    if (userAuth.length > 0) {
+    if (userAuth) {
       return <Alert severity="info" >Autenticado {userAuth}</Alert>;
     } else {
       return <p></p>;
