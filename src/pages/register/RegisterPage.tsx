@@ -28,12 +28,16 @@ const RegisterPage: React.FC = () => {
   const [genderDetail, setGenderDetail] = useState('Mejor dicho...');
   const [error, setError] = useState(''); 
   const [infomsg, setInfomsg] = useState(''); 
+  const [userAuth, setUserAuth] = useState(''); 
+  
   
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user) {
       //navigate("/user"); 
       //setDataInDatabase(user.uid, urlProfile, genderToStore);
-      setInfomsg("Autenticado " + user.email );
+      if(user.email){
+        setUserAuth(user.email);
+      }
     } else {
       // User is signed out
       // ...
@@ -145,8 +149,8 @@ const RegisterPage: React.FC = () => {
   }
 
   function CustomInfoAlert() {
-    if (infomsg.length > 0) {
-      return <Alert severity="info" >{infomsg}</Alert>;
+    if (userAuth.length > 0) {
+      return <Alert severity="info" >Autenticado {userAuth}</Alert>;
     } else {
       return <p></p>;
     }
