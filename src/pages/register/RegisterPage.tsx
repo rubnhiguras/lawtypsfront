@@ -18,7 +18,7 @@ const RegisterPage: React.FC = () => {
 
   document.title = document.title = packageJson.title + ' ' + 'Register';
 
-  const [openSpinner, setOpenSpinner] = React.useState(false);
+  const [openSpinner, setOpenSpinner] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordCheck, setPasswordCheck] = useState('');
@@ -40,7 +40,7 @@ const RegisterPage: React.FC = () => {
 
   const handleLogin = () => {
     setOpenSpinner(true);
-    const able = checkPassword() && checkEmail() && checkName() && checkRole();
+    const able = checkEmail() && checkName() && checkRole() && checkPassword();
     if (able) {
       let urlProfile: string;
       let genderToStore: string;
@@ -67,12 +67,14 @@ const RegisterPage: React.FC = () => {
           const usersCollection = collection(firebaseDatabase, 'users');
           setDoc(doc(usersCollection, credential.user.uid), { ...userData })
             .then(ref => {
-              console.log(ref);
+              console.info(ref);
             }).catch((error) => {
-              setError("¡Ups, algo no ha ido bien! " + error.message);
+              console.error(error.message);
+              //setError("¡Ups, algo no ha ido bien! " + error.message);
             }).finally(() => { setOpenSpinner(false); });
         }).catch((error) => {
-          setError("¡Ups, algo no ha ido bien! " + error.message);
+          console.error(error.message);
+          //setError("¡Ups, algo no ha ido bien! " + error.message);
         }).finally(() => { setOpenSpinner(false); });
     }else{
       setOpenSpinner(false);
@@ -80,7 +82,7 @@ const RegisterPage: React.FC = () => {
   };
 
   function checkPassword(): boolean {
-    const result = password.length > 6 && passwordCheck === password;
+    const result = passwordCheck === password && password.length > 6;
     setError(result ? "" : "La contraseña debe tener al menos 6 caracteres y coincidir en ambos campos");
     return result ;
   }
@@ -146,7 +148,7 @@ const RegisterPage: React.FC = () => {
         <CircularProgress color="inherit" />
       </Backdrop>
       <CardContent>
-        <h2>Register</h2>
+        <h2>Nuevo&nbsp;usuario</h2>
         <Box sx={{ minWidth: 99 }}>
           <FormControl component="form" sx={{ '& > :not(style)': { m: 0.4, width: '29.5ch' }, }} 
             autoComplete="off" noValidate

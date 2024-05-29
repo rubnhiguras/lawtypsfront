@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import LoggedBarPage from './LoggedBarPage';
-import { onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth';
+import { User, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth';
 import { firebaseAuth, firebaseDatabase, firebaseStorage } from '../../services/Firebase/FirebaseService';
 import { collection, doc, getDoc, updateDoc } from 'firebase/firestore';
-//import { useNavigate } from 'react-router-dom';
 import { Alert, AlertColor, Backdrop, Button, CardActions, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Slide, Snackbar, TextField, Tooltip } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import UpgradeIcon from '@mui/icons-material/Upgrade';
@@ -11,16 +10,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import packageJson from '../../../package.json';
 import PasswordIcon from '@mui/icons-material/Password';
+import { UserModel } from '../../services/UserModel/UserModel';
 
 const LoggedContentPage: React.FC = () => {
-    //const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [passwordAlert, setPasswordAlert] = useState(false);
     const [urlProfile, setUrlProfile] = useState('');
-    const [UidUser, setUidUser] = useState('');
-    const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
-    const [role, setRole] = useState('');
+    const [UidUser] = useState('');
     const [gender, setGender] = useState('');
     const [progress, setProgress] = useState(0);
     const [openResultUpload, setOpenResultUpload] = useState(false);
@@ -28,42 +24,42 @@ const LoggedContentPage: React.FC = () => {
     const [severityMessage, setSeverityMessage] = useState<AlertColor>();
     const [error, setError] = useState('');
     const [genderDetail, setGenderDetail] = useState('Mejor dicho...');
-    const [updatedData, setUpdatedData] = useState(false); 
+    const [dataUserExist, setDataUserExist] = useState<UserModel>();
+    let userLogged: User | null = null;
 
     document.title = document.title = packageJson.title + ' ' + name;
 
     onAuthStateChanged(firebaseAuth, (user) => {
         if (user) {
-            if (!updatedData) {
-                const uid = user.uid;
-                const usersCollection = collection(firebaseDatabase, 'users');
-                getDoc(doc(usersCollection, uid))
-                    .then((document) => {
-                        const genderRetrieved = document.get('gender');
-                        if(genderRetrieved != 'Masculino' && genderRetrieved != 'Femenino'){
-                            setGender('Mejor dicho...');
-                            setGenderDetail(genderRetrieved);
-                        }else{
-                            setGender(genderRetrieved);
-                        }
-                        setEmail(document.get('email'));
-                        setName(document.get('name'));
-                        setRole(document.get('role'));
-                        setUrlProfile(document.get('urlAvatarProfile'))
-                        setUidUser(document.get('uuid'));
-                        setUpdatedData(true);
-                    }).catch((error) => {
-                        console.log(error);
-                        alert(error);
-                        setUpdatedData(false);
-                    });
+            userLogged = user;
+            const uid = userLogged.uid;
+            if(dataUserExist){
+
+            }else{
+                loadUserData(uid);
             }
         } else {
-            window.location.href = '/Login';
-            //navigate("/login");
+            window.location.href = '/Login'; 
         }
-
     });
+
+    function loadUserData(uid: string) {
+        const usersCollection = collection(firebaseDatabase, 'users');
+        getDoc(doc(usersCollection, uid))
+            .then((document) => {
+                setDataUserExist(new UserModel(document.get('name'), document.get('email'), document.get('role'), document.get('gender'), document.get('urlAvatarProfile'), document.get('uuid')));
+                const genderRetrieved = document.get('gender');
+                if (genderRetrieved != 'Masculino' && genderRetrieved != 'Femenino') {
+                    setGender('Mejor dicho...');
+                    setGenderDetail(genderRetrieved);
+                } else {
+                    setGender(genderRetrieved);
+                }
+            }).catch((error) => {
+                console.error(error);
+                alert(error);
+            });
+    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -92,13 +88,46 @@ const LoggedContentPage: React.FC = () => {
                                 setSeverityMessage('error');
                                 setError(error.message);
                             }).finally(() => {
-                                setProgress(100); setOpen(false); setProgress(0); setOpenResultUpload(true); setUpdatedData(false);
+                                setProgress(100); setOpen(false); setProgress(0); setOpenResultUpload(true);
                             });
                     });
                 }
             );
         }
     };
+
+    const handleSave = () => {
+        setOpen(true);
+        const able = checkName() && checkRole();
+        if (able) {
+            let genderToStore: string;
+            if (gender === 'Masculino' || gender === 'Femenino') {
+                genderToStore = gender;
+            } else {
+                genderToStore = genderDetail;
+            }
+            if(dataUserExist){
+                const userDoc = doc(firebaseDatabase, "users", dataUserExist.uuid );
+                updateDoc(userDoc, { 'name': dataUserExist.name, 'gender': genderToStore })
+                    .then(() => {
+                        setMessageUpload("Datos actualizados correctamente.");
+                        setSeverityMessage('success');
+                        if(dataUserExist){
+                            loadUserData(dataUserExist.uuid);
+                        }
+                    }).catch((error) => {
+                        setMessageUpload("ERROR al actualizar:\n " + error.message);
+                        setSeverityMessage('error');
+                        setError(error.message);
+                    }).finally(() => {
+                        setOpen(false);
+                        setOpenResultUpload(true);
+                    });
+            }
+        } else {
+            setOpen(false);
+        };
+    }
 
     const handleClose = () => {
         setOpenResultUpload(false);
@@ -107,49 +136,23 @@ const LoggedContentPage: React.FC = () => {
     };
 
     function checkName(): boolean {
-        const result = name.length > 2;
-        setError(result ? "" : "No es un nombre válido");
+        let result = false;
+        if (dataUserExist) {
+            result = dataUserExist.name.length > 2;
+            setError(result ? "" : "No es un nombre válido");
+        }
         return result;
     }
 
     function checkRole(): boolean {
-        const result = role.length > 2;
-        setError(result ? "" : "El rol es obligatorio");
+        let result = false;
+        if (dataUserExist) {
+            result = dataUserExist.role.length > 2;
+            setError(result ? "" : "El rol es obligatorio");
+        }
         return result;
     }
 
-    const handleSave = () => {
-        setOpen(true);
-        const able = checkName() && checkRole();
-        if (able) {
-            let genderToStore: string;
-            if (gender === 'Masculino') {
-                genderToStore = gender;
-            } else if (gender === 'Femenino') {
-                genderToStore = gender;
-            } else {
-                genderToStore = genderDetail;
-            }
-
-            const userDoc = doc(firebaseDatabase, 'users', UidUser);
-            updateDoc(userDoc, { 'name': name, 'gender': genderToStore })
-                .then(() => {
-                    setMessageUpload("Datos actualizados correctamente.")
-                    setSeverityMessage('success');
-                }).catch((error) => {
-                    setMessageUpload("ERROR al actualizar:\n " + error.message)
-                    setSeverityMessage('error');
-                    setError(error.message);
-                }).finally(() => {
-                    setOpen(false);
-                    setOpenResultUpload(true); 
-                    setUpdatedData(true);
-                });
-
-        } else {
-            setOpen(false);
-        };
-    }
 
     const onKeyDown = (e: { key: string; }) => {
         if (e.key === "Enter") {
@@ -179,18 +182,32 @@ const LoggedContentPage: React.FC = () => {
 
 
     function handleSendPasswordEmail() {
-        setPasswordAlert(false);
-        setOpen(true);
-        sendPasswordResetEmail(firebaseAuth, email)
-        .then(() => {
-            setMessageUpload("Enviado enlace de restauración de contraseña a "+ email);
-            setSeverityMessage('success');
-        }).catch((error) => {
-            setMessageUpload("ERROR al enviar enlace de restauración de contraseña:\n " + error.message)
-            setSeverityMessage('error'); 
-        }).finally(() => {
-            setOpen(false); setOpenResultUpload(true);
-        }); 
+        if (dataUserExist) {
+            setPasswordAlert(false);
+            setOpen(true);
+            sendPasswordResetEmail(firebaseAuth, dataUserExist.email)
+                .then(() => {
+                    setMessageUpload("Enviado enlace de restauración de contraseña a " + dataUserExist.email);
+                    setSeverityMessage('success');
+                }).catch((error) => {
+                    setMessageUpload("ERROR al enviar enlace de restauración de contraseña:\n " + error.message)
+                    setSeverityMessage('error');
+                }).finally(() => {
+                    setOpen(false); setOpenResultUpload(true);
+                });
+        }
+    }
+
+    const handleNameChange = (e: { target: { value: any; }; }) => {
+        //setName({...dataUserExist,name: e.target.value}) 
+        if (dataUserExist) {
+            setDataUserExist({ ...dataUserExist, name: e.target.value });
+        }
+    }
+
+    const handleGenderChange = (e: { target: { value: any; }; }) => {
+        //setName({...dataUserExist,name: e.target.value})
+        setGender(e.target.value);
     }
 
     return (
@@ -201,23 +218,22 @@ const LoggedContentPage: React.FC = () => {
             >
                 <CircularProgress color="inherit" variant='determinate' value={progress} />
             </Backdrop>
-            <LoggedBarPage username={name} urlProfile={urlProfile}></LoggedBarPage>
+            <LoggedBarPage username={dataUserExist?.name} urlProfile={dataUserExist?.urlAvatarProfile}></LoggedBarPage>
             <FormControl component="form" sx={{ p: 4, textAlign: "left", '& > :not(style)': { m: 1, width: '90%' }, marginTop: "1rem" }} autoComplete="off">
 
-                <Chip label={email} variant="filled" color="default" />
-                <Chip label={role} variant="filled" color="default" />
+                <Chip label={ dataUserExist?.email  } variant="filled" color="default" />
+                <Chip label={dataUserExist?.role } variant="filled" color="default" />
 
-                <TextField id="Name-basic" label="Name" variant="standard" value={name} onChange={(e) => (setName(e.target.value))}
-                    onKeyDown={onKeyDown} required />
+                <TextField id="Name-basic" placeholder="Nombre" variant="standard" value={dataUserExist?.name} name="name" onChange={handleNameChange}
+                    required />
 
                 <TextField sx={{ width: '20ch' }}
                     select
-                    label="Gender"
                     id="GenderField"
-                    value={gender}
-                    onChange={(e) => (setGender(e.target.value))}
+                    label="Género"
+                    value={gender} name="gender"
                     variant="standard"
-                    onKeyDown={onKeyDown}
+                    onChange={handleGenderChange}
                 >
                     {genders.map((gender) => (
                         <MenuItem key={gender.code} value={gender.name}>
@@ -244,7 +260,7 @@ const LoggedContentPage: React.FC = () => {
                         </Button>
                     </Tooltip>
                     <Dialog
-                        open={passwordAlert} 
+                        open={passwordAlert}
                     >
                         <DialogTitle id="alert-password-dialog-title">
                             Cambiando contraseña...
@@ -255,8 +271,8 @@ const LoggedContentPage: React.FC = () => {
                             </DialogContentText>
                         </DialogContent>
                         <DialogActions>
-                            <Button sx={{color: "red"}} onClick={handleClose} autoFocus>Mejor no, cancelar</Button>
-                            <Button sx={{color: "#6b9080"}} onClick={handleSendPasswordEmail}>Si, adelante</Button>
+                            <Button sx={{ color: "red" }} onClick={handleClose} autoFocus>Mejor no, cancelar</Button>
+                            <Button sx={{ color: "#6b9080" }} onClick={handleSendPasswordEmail}>Si, adelante</Button>
                         </DialogActions>
                     </Dialog>
                     <div id='avataruploadsection'>
@@ -295,7 +311,7 @@ const LoggedContentPage: React.FC = () => {
                         </Snackbar>
                     </div>
                     <Tooltip title="Actualizar datos">
-                        <Button variant="contained" onClick={handleSave} sx={{backgroundColor: "#6b9080", ":hover":{backgroundColor: "#506C60"}}} className='button-section-element' startIcon={<SaveIcon />} />
+                        <Button variant="contained" onClick={handleSave} sx={{ backgroundColor: "#6b9080", ":hover": { backgroundColor: "#506C60" } }} className='button-section-element' startIcon={<SaveIcon />} />
                     </Tooltip>
                 </CardActions>
 
