@@ -26,8 +26,7 @@ const RegisterPage: React.FC = () => {
   const [role, setRole] = useState('');
   const [gender, setGender] = useState('');
   const [genderDetail, setGenderDetail] = useState('Mejor dicho...');
-  const [error, setError] = useState(''); 
-  const [infomsg, setInfomsg] = useState(''); 
+  const [error, setError] = useState('');
   const [userAuth, setUserAuth] = useState(''); 
   
   
