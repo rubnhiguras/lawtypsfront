@@ -1,30 +1,26 @@
-# React + TypeScript + Vite
+# LawTyps Soluciones jurídicas
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+El nombre de la aplicaciónes provisional. Para más información, en la herramienta hay más detalle.
 
-Currently, two official plugins are available:
+Despliegue actual: https://latest-dev.du3wj771srgbj.amplifyapp.com/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Entorno web diseñado e implementado con React TS.
 
-## Expanding the ESLint configuration
+Para ejecutar la herramienta en un entorno en local, es necesario instalar node.js y react ts mediante comandos.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
+La base de datos provisional es Firebase cuya conexión se puede detectar en /services/Firenase/FirebaseService.ts y es la siguiente:
 
 ```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+const firebaseConfig = {
+    apiKey: "AIzaSyChxUoqZZtdZTpN5F8Fg9yO8l_2K2vdmL0",
+    authDomain: "lawt-a9eab.firebaseapp.com",
+    projectId: "lawt-a9eab",
+    storageBucket: "lawt-a9eab.appspot.com",
+    messagingSenderId: "259318949322",
+    appId: "1:259318949322:web:7b202337df585bc3f51b33"
+};
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Dicha información de conexión será sustituida por variables de entorno según dónde se vaya a desplegar.
+
+ 
