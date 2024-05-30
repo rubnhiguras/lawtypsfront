@@ -185,6 +185,21 @@ function LoggedBarPage(props: any) {
         }
     }
 
+    function generatePageSmallItem(page: Pages): any {
+
+        if(USERS_TYPS.ALL === page.typeuser || userArt === page.typeuser.value){
+            return (
+                <MenuItem key={page.name} onClick={(e) => {e.target; handlePage(page.site)}} selected={selectedPage(page.site)}>
+                <Typography textAlign="inherit" sx={{
+                    ":hover": { color: '#6b9080' }
+                }} >{page.name}</Typography>
+            </MenuItem>
+            );
+        } else {
+            return (<i></i>);
+        }
+    }
+
     function verifyAndRedirect(): any{
         if(userArt?.length > 0){
             if(!verifyPath(window.location.pathname)){
@@ -228,13 +243,7 @@ function LoggedBarPage(props: any) {
                                 display: { xs: 'block', md: 'none' },
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page.name} onClick={(e) => {e.target; handlePage(page.site)}} selected={selectedPage(page.site)}>
-                                    <Typography textAlign="inherit" sx={{
-                                        ":hover": { color: '#6b9080' }
-                                    }} >{page.name}</Typography>
-                                </MenuItem>
-                            ))}
+                            {pages.map((page) => generatePageSmallItem(page))} 
                         </Menu>
                     </Box>
 
