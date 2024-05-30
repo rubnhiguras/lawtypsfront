@@ -21,7 +21,7 @@ function App() {
     </BrowserRouter>
     <footer >
         v.{packageJson.version}&nbsp;&nbsp;<i>&#169;</i>2024&nbsp;
-    </footer>
+    </footer> 
     </>
   )
 }
