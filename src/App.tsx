@@ -1,10 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import LoginPage from './pages/Login/LoginPage'
-import HomePage from './pages/Home/HomePage'
-import RegisterPage from './pages/Register/RegisterPage' 
-import LoggedContentPage from './pages/User/LoggedContentPage'
+import LoginPage from './pages/LoginP/LoginPage'
+import HomePage from './pages/HomeP/HomePage'
+import RegisterPage from './pages/RegisterP/RegisterPage' 
+import LoggedContentPage from './pages/UserP/LoggedContentPage'
 import packageJson from '../package.json'; 
-import NotFoundPage from './pages/Wrong/NotFoundPage'
+import NotFoundPage from './pages/WrongP/NotFoundPage'
 
 function App() {  
   return (
