@@ -1,17 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import LoginPage from './pages/login/LoginPage'
-import HomePage from './pages/home/HomePage'
-import RegisterPage from './pages/register/RegisterPage' 
+import LoginPage from './pages/Login/LoginPage'
+import HomePage from './pages/Home/HomePage'
+import RegisterPage from './pages/Register/RegisterPage' 
 import LoggedContentPage from './pages/User/LoggedContentPage'
 import packageJson from '../package.json'; 
-import NotFoundPage from './pages/notFound/NotFoundPage'
+import NotFoundPage from './pages/Wrong/NotFoundPage'
 
-function App() { 
-
-  //const copyright = <i>&#169;&nbsp;2024&nbsp;</i>;
-
-  let version = packageJson.version; 
-
+function App() {  
   return (
     <> 
     <BrowserRouter>
@@ -25,7 +20,7 @@ function App() {
       </Routes>
     </BrowserRouter>
     <footer >
-        v.{version} 
+        v.{packageJson.version}&nbsp;&nbsp;<i>&#169;</i>2024&nbsp;
     </footer>
     </>
   )

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import './RegisterPage.css'
 import { Alert, Backdrop, Box, Button, Card, CardActions, CardContent, CircularProgress, FormControl, MenuItem, TextField, Tooltip } from '@mui/material';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
@@ -7,14 +6,14 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import { doc, setDoc } from 'firebase/firestore';
 import { UserModel } from '../../services/UserModel/UserModel';
-import { EMAIL_COND_REGEX, firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
+import { EMAIL_COND_REGEX, USERS_TYPS, firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
 import packageJson from '../../../package.json';
 
 const defaultAvatarUrlUn: string = "https://www.limonium.org/wp-content/uploads/2023/08/default-avatar.webp";
 const defaultAvatarUrlFe: string = "https://www.svgrepo.com/show/10678/avatar.svg"
 const defaultAvatarUrlMa: string = "https://www.svgrepo.com/show/61986/avatar.svg"
 
-const RegisterPage: React.FC = () => {
+function RegisterPage(){
 
   document.title = document.title = packageJson.title + ' ' + 'Register';
 
@@ -31,15 +30,12 @@ const RegisterPage: React.FC = () => {
   
   
   onAuthStateChanged(firebaseAuth, (user) => {
-    if (user) {
-      //navigate("/user"); 
-      //setDataInDatabase(user.uid, urlProfile, genderToStore);
+    if (user) {  
       if(user.email && !userAuth){
         setUserAuth(user.email);
       }
     } else {
-      // User is signed out
-      // ...
+      // User is signed out 
     }
   });
 
@@ -116,8 +112,7 @@ const RegisterPage: React.FC = () => {
 
 
   const handleBack = () => {
-    window.location.href = '/Login';
-    //navigate('/Login');
+    window.location.href = '/Login'; 
   };
 
   const onKeyDown = (e: { key: string; }) => {
@@ -126,10 +121,11 @@ const RegisterPage: React.FC = () => {
     }
   };
 
-  const roles = [
-    { name: 'Abogado', code: 'LW' },
-    { name: 'Cliente', code: 'CL' },
-    { name: 'Administrador', code: 'AD' }
+  const roles =
+  [
+    { name: USERS_TYPS.ABO.value, code: USERS_TYPS.ABO.code },
+    { name: USERS_TYPS.CLI.value, code: USERS_TYPS.CLI.code },
+    { name: USERS_TYPS.ADM.value, code: USERS_TYPS.ADM.code }
   ];
 
   const genders = [
@@ -169,8 +165,8 @@ const RegisterPage: React.FC = () => {
         <Box sx={{ minWidth: 99 }}>
           <FormControl component="form" sx={{ '& > :not(style)': { m: 0.4, width: '29.5ch' }, }}
             autoComplete="off" noValidate
-          >
-             <CustomInfoAlert></CustomInfoAlert>
+          > 
+            <CustomInfoAlert></CustomInfoAlert> 
             <div>
               <TextField id="Email-basic" label="Email" variant="standard" type="email" value={email} onChange={(e) => (setEmail(e.target.value))}
                 onKeyDown={onKeyDown} required />

@@ -1,8 +1,7 @@
-import React from 'react';
 import './HomePage.css'
 import packageJson from '../../../package.json';
 
-const HomePage: React.FC = () => {
+function HomePage() {
 
     document.title = document.title = packageJson.title + ' ' + 'Home';
 

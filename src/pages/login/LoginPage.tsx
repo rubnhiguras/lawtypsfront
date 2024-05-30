@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
+import { useState } from 'react'; 
 import './LoginPage.css'
 import Button from '@mui/material/Button';
 import { Alert, Backdrop, Box, Card, CardActions, CardContent, CircularProgress, FormControl, TextField, Tooltip } from '@mui/material';
@@ -10,7 +9,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import packageJson from '../../../package.json';
 import { FirebaseError } from 'firebase/app';
 
-const LoginPage: React.FC = () => {
+function LoginPage(){
   document.title = document.title = packageJson.title + ' ' + 'Login';
 
   const [email, setEmail] = useState('');
