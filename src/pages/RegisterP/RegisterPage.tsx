@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/aut
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
 import { doc, setDoc } from 'firebase/firestore';
-import { UserModel } from '../../services/UserModel/UserModel';
+import { UserModel } from '../../services/Model/UserModel/UserModel';
 import { EMAIL_COND_REGEX, USERS_TYPS, firebaseAuth, firebaseDatabase } from '../../services/Firebase/FirebaseService';
 import packageJson from '../../../package.json';
 
@@ -153,7 +153,7 @@ function RegisterPage(){
   }
 
   return (
-    <Card id="registercard" sx={{ marginTop: 0.4, minWidth: 100, borderRadius: "40px" }}>
+    <Card id="registercard" sx={{ borderRadius: "40px", width: "350px"   }}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={openSpinner}

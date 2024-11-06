@@ -1,6 +1,6 @@
 import { Alert, AlertColor, Backdrop, Button, CardActions, Chip, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Slide, Snackbar, TextField, Tooltip } from '@mui/material';
 import React, { useState } from 'react';
-import { UserModel } from '../../../services/UserModel/UserModel';
+import { UserModel } from '../../../services/Model/UserModel/UserModel';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { firebaseAuth, firebaseDatabase, firebaseStorage } from '../../../services/Firebase/FirebaseService';
 import { doc, updateDoc } from 'firebase/firestore';

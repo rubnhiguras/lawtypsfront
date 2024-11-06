@@ -193,7 +193,7 @@ function LoggedBarPage(props: any) {
                 <Typography textAlign="inherit" sx={{
                     ":hover": { color: '#6b9080' }
                 }} >{page.name}</Typography>
-            </MenuItem>
+                </MenuItem>
             );
         } else {
             return (<i></i>);
@@ -241,7 +241,7 @@ function LoggedBarPage(props: any) {
                             onClose={handleCloseNavMenu}
                             sx={{
                                 display: { xs: 'block', md: 'none' },
-                            }}
+                            }} 
                         >
                             {pages.map((page) => generatePageSmallItem(page))} 
                         </Menu>
@@ -265,8 +265,8 @@ function LoggedBarPage(props: any) {
                             <DialogTitle id="avatar-dialog-title">
                                 {userlogged}
                             </DialogTitle>
-                            <DialogContent id="avatar-dialog-content">
-                                <Avatar alt={userlogged} src={urlProfile} variant="rounded" sx={{ width: 550, height: 550 }}/>
+                            <DialogContent id="avatar-dialog-content" >
+                                <Avatar alt={userlogged} src={urlProfile} variant="rounded" sx={{ width: {xs: 250, md: 550} , height: {xs: 250, md: 550}}}/>
                             </DialogContent>
                         </Dialog>
 

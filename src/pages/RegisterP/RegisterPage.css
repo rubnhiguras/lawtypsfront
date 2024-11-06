@@ -14,12 +14,14 @@
 @media ( max-width: 500px){
   #registercard{ 
     margin-top: 33%;
+    display: contents;
   }
 }
 
 @media ( min-width: 500px){
   #registercard{ 
     margin: 15% 34% 0 34%;
+    display: inline-block;
   }
 }
 

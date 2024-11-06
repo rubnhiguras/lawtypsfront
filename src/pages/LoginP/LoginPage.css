@@ -13,11 +13,13 @@
 @media ( max-width: 500px){
   #logincard{ 
     margin-top: 33%;
+    display: contents;
   }
 }
 
 @media ( min-width: 500px){
   #logincard{ 
     margin: 15% 34% 0 34%;
+    display: inline-block;
   }
 }

@@ -20,10 +20,6 @@ function LoginPage(){
   onAuthStateChanged(firebaseAuth, (user) => {
     if (user) {
       window.location.href = '/User/';
-      //navigate("/user");
-    } else {
-      // User is signed out
-      // ...
     }
   });
 
@@ -59,7 +55,6 @@ function LoginPage(){
     }
   }
   const handleBack = () => {
-    //navigate('/');
     window.location.href = '/Home';
   };
 
@@ -81,7 +76,7 @@ function LoginPage(){
   }
 
   return (
-    <Card id="logincard" sx={{ marginTop: 0.4, minWidth: 100, borderRadius: "40px" }}>
+    <Card id="logincard" sx={{ marginTop: 0.4, borderRadius: "40px", width: "350px", display: "inline-block"}}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={open}
