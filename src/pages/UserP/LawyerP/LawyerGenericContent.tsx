@@ -1,22 +1,18 @@
 import { UserModel } from "../../../services/Model/UserModel/UserModel";
 import packageJson from "../../../../package.json";
-import React, { Component } from "react";
+import React from "react";
 import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid2";
 import {
   Autocomplete,
-  Avatar,
   Box,
-  Button,
   CardActionArea,
-  CardActions,
   CardContent,
   CardMedia,
   Dialog,
   DialogContent,
   DialogTitle,
-  Divider,
   Fab,
   IconButton,
   outlinedInputClasses,
