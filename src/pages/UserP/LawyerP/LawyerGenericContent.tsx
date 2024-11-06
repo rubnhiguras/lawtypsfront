@@ -1,7 +1,6 @@
 import { UserModel } from "../../../services/Model/UserModel/UserModel";
 import packageJson from "../../../../package.json";
 import React from "react";
-import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid2";
 import {
@@ -44,7 +43,6 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
   const [showInitButton, setShowInitButton] = React.useState(false);
   const [openPopupDetail, setOpenPopupDetail] = React.useState(false);
   const [currentIndex, setCurrentIndex] = React.useState(-1);
-  
 
   document.title = document.title =
     packageJson.title + " " + props.datauserparam?.name;
@@ -196,22 +194,9 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
     right: "0.6rem",
   };
 
-  const Item = styled(Card)(({ theme }) => ({
-    backgroundColor: "#fff",
-    borderColor: "#6b9080",
-    border: "",
-    ...theme.typography.body1,
-    padding: theme.spacing(1.5),
-    textAlign: "left",
-    color: theme.palette.text.primary,
-    ...theme.applyStyles("dark", {
-      backgroundColor: "#1A2027",
-    }),
-  }));
-
   const handleMoreCard = () => {
-    let focusVal = contador;
-    let newCounterVal = contador * 2;
+    const focusVal = contador;
+    const newCounterVal = contador * 2;
     setContador(newCounterVal);
     console.log(
       "handleMoreCard - " + document.getElementById("valItem" + focusVal)
@@ -243,54 +228,75 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
     display: { xs: "block", sm: "block", md: "inline-flex" },
   };
 
-  function popUpDetail(index: number): void{
+  function popUpDetail(index: number): void {
     setOpenPopupDetail(true);
     setCurrentIndex(index);
   }
 
-  function popUpDetailClosed(): void{
+  function popUpDetailClosed(): void {
     setOpenPopupDetail(false);
   }
 
-  function generateLawyerCard(index: number): any {
+  function generateLawyerCard(index: number): JSX.Element {
     return (
-      <Item key={index} id={"valItem" + index}  >
-        <Card sx={{ width: 340 }}>
-          <CardActionArea onClick={ ()=> popUpDetail(index)}>
-            {generateLawyerCardDetail(index)}
-          </CardActionArea>
-        </Card>
-      </Item>
+      <Card sx={{ width: 340 }} key={index} id={"valItem" + index}>
+        <CardActionArea onClick={() => popUpDetail(index)}>
+          {generateLawyerCardDetail(index)}
+        </CardActionArea>
+      </Card>
     );
   }
 
-  function generateLawyerCardDetail(index: number): any {
+  function generateLawyerCardDetail(index: number): JSX.Element {
     return (
-            <><CardMedia
-            component="img"
-            image={index % 7 === 0
-                ? defaultAvatarUrlMa
+      <>
+        <CardMedia
+          component="img"
+          image={
+            index % 7 === 0
+              ? defaultAvatarUrlMa
+              : index % 3 === 0
+              ? defaultAvatarUrlFe
+              : defaultAvatarUrlUn
+          }
+        />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            <div>Sr/a Abogado/a núm. {index + 1}</div>
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "text.primary" }}
+            component="div"
+          >
+            Descripción del abogado con núm. {index}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", padding: 2 }}
+            component="div"
+          >
+            <div>
+              {index % 7 === 0
+                ? colegios[7].label
                 : index % 3 === 0
-                    ? defaultAvatarUrlFe
-                    : defaultAvatarUrlUn} /><CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    Sr/a Abogado/a núm. {index + 1}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    Descripción del abogado con núm. {index}
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    <p>
-                        {index % 7 === 0
-                            ? colegios[7].location
-                            : index % 3 === 0
-                                ? colegios[3].location
-                                : index % 5 === 0
-                                    ? colegios[5].location
-                                    : colegios[15].location}
-                    </p>
-                </Typography>
-            </CardContent></>
+                ? colegios[3].label
+                : index % 5 === 0
+                ? colegios[5].label
+                : colegios[15].label}
+            </div>
+            <div>
+              {index % 7 === 0
+                ? colegios[7].location
+                : index % 3 === 0
+                ? colegios[3].location
+                : index % 5 === 0
+                ? colegios[5].location
+                : colegios[15].location}
+            </div>
+          </Typography>
+        </CardContent>
+      </>
     );
   }
 
@@ -366,20 +372,16 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
 
   return (
     <React.Fragment>
-
-    <Dialog
-        open={openPopupDetail} 
-        onClose={popUpDetailClosed}
-    > 
+      <Dialog open={openPopupDetail} onClose={popUpDetailClosed}>
         <DialogTitle id="avatar-dialog-title">
-             Abogado/a núm. {currentIndex}
+          Abogado/a núm. {currentIndex}
         </DialogTitle>
-        <DialogContent id="avatar-dialog-content" >
+        <DialogContent id="avatar-dialog-content">
           {generateLawyerCardDetail(currentIndex)}
         </DialogContent>
-    </Dialog>  
+      </Dialog>
 
-    <Box>
+      <Box>
         <ThemeProvider theme={textFieldFilterStyle(useTheme())}>
           <Grid
             sx={{

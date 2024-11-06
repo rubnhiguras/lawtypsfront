@@ -20,9 +20,7 @@ function LoggedContentPage(){
         if (user) {
             userLogged = user;
             const uid = userLogged.uid;
-            if (dataUserExist) {
-
-            } else {
+            if (!dataUserExist) {
                 loadUserData(uid);
             }
         } else {
@@ -51,7 +49,7 @@ function LoggedContentPage(){
         
         const componentGeneric = (<><h3>Página seleccionada actualmente en contrucción...</h3><div><img src={ImgThinking} width="250" height="260"></img></div></>);
 
-        function generateUserDataContent(): any {
+        function generateUserDataContent():  JSX.Element {
         switch(window.location.pathname) { 
             case PageEnumModel.P_USUARIO: {
                 if(firebaseAuth.currentUser){
