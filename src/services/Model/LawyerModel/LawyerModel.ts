@@ -1,4 +1,4 @@
-export class UserModel{
+export class LawyerModel{
     name: string;
     email: string;
     role: string;

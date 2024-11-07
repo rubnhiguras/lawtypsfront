@@ -2,12 +2,12 @@ import { useState } from 'react';
 import './LoginPage.css'
 import Button from '@mui/material/Button';
 import { Alert, Backdrop, Box, Card, CardActions, CardContent, CircularProgress, FormControl, TextField, Tooltip } from '@mui/material';
-import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { firebaseAuth, EMAIL_COND_REGEX } from '../../services/Firebase/FirebaseService';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LoginIcon from '@mui/icons-material/Login';
-import packageJson from '../../../package.json';
-import { FirebaseError } from 'firebase/app';
+import packageJson from '../../../package.json'; 
+import { FirebaseError } from 'firebase/app'; 
 
 function LoginPage(){
   document.title = document.title = packageJson.title + ' ' + 'Login';
@@ -16,13 +16,7 @@ function LoginPage(){
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false); 
-
-  onAuthStateChanged(firebaseAuth, (user) => {
-    if (user) {
-      window.location.href = '/User/';
-    }
-  });
-
+  
   const onKeyDown = (e: { key: string; }) => {
     if (e.key === "Enter") {
       handleLogin();
@@ -46,6 +40,7 @@ function LoginPage(){
   const checkLogInfo = async () => {
     try {
       await signInWithEmailAndPassword(firebaseAuth, email, password);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (errorLaunched: FirebaseError | any) {
       if(errorLaunched.message.includes("invalid-credential")){
         setError("Credenciales incorrectas");
@@ -75,7 +70,7 @@ function LoginPage(){
     return EMAIL_COND_REGEX.test(email);
   }
 
-  return (
+  return ( 
     <Card id="logincard" sx={{ marginTop: 0.4, borderRadius: "40px", width: "350px", display: "inline-block"}}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -115,7 +110,7 @@ function LoginPage(){
 
         </Box>
       </CardContent>
-    </Card>
+    </Card> 
   );
 };
 

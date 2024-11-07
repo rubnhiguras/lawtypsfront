@@ -2,7 +2,7 @@ import { Alert, AlertColor, Backdrop, Button, CardActions, Chip, CircularProgres
 import React, { useState } from 'react';
 import { UserModel } from '../../../services/Model/UserModel/UserModel';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { firebaseAuth, firebaseDatabase, firebaseStorage } from '../../../services/Firebase/FirebaseService';
+import { firebaseAuth, firebaseDatabase, firebaseStorage, USERS_TYPS } from '../../../services/Firebase/FirebaseService';
 import { doc, updateDoc } from 'firebase/firestore';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import PersonIcon from '@mui/icons-material/Person';
@@ -11,11 +11,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import PasswordIcon from '@mui/icons-material/Password';
 import packageJson from '../../../../package.json';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
-
-    const nameVar = props.datauserparam?.name;
-    const genderVar = props.datauserparam?.gender;
-    const uuid = props.datauserparam?.uuid;
 
     const [open, setOpen] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -25,7 +22,7 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
     const [severityMessage, setSeverityMessage] = useState<AlertColor>();
     const [error, setError] = useState('');
     const [editableDataUser, setEditableDataUser] = useState<{name: string, gender:string}>(() => { 
-        return {name: nameVar, gender: genderVar};
+        return {name: props.datauserparam?.name, gender: props.datauserparam?.gender};
     });
 
     document.title = document.title = packageJson.title + ' ' + props.datauserparam?.name; 
@@ -33,7 +30,7 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
     if(props.datauserparam ){
         if(editableDataUser){
             if(editableDataUser.name == undefined || editableDataUser.gender == undefined){
-                setEditableDataUser({name: nameVar, gender: genderVar});
+                setEditableDataUser({name: props.datauserparam?.name, gender: props.datauserparam?.gender});
             }
         }
     }
@@ -47,7 +44,7 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setOpen(true);
-            const reference = ref(firebaseStorage, `/images/${uuid}/avatar`);
+            const reference = ref(firebaseStorage, `/images/${props.datauserparam?.uuid}/avatar`);
             const uploadTask = uploadBytesResumable(reference, e.target.files[0]);
             uploadTask.on("state_changed",
                 (snapshot) => {
@@ -59,10 +56,10 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
                     alert(error);
                 },
                 () => {
-                    if (uuid) {
+                    if (props.datauserparam?.uuid) {
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                             props.datauserparam.urlAvatarProfile = downloadURL;
-                            const userDoc = doc(firebaseDatabase, 'users', uuid);
+                            const userDoc = doc(firebaseDatabase, 'users', props.datauserparam.uuid);
                             updateDoc(userDoc, { 'urlAvatarProfile': downloadURL })
                                 .then(() => {
                                     setMessageUpload(editableDataUser.name + ", el avatar del perfil se ha cambiado.")
@@ -85,15 +82,12 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
         setOpen(true);
         const able = checkName();
         if (able) {
-            if (uuid) {
-                const userDoc = doc(firebaseDatabase, "users", uuid);
+            if (props.datauserparam?.uuid) {
+                const userDoc = doc(firebaseDatabase, "users", props.datauserparam.uuid);
                 updateDoc(userDoc, { 'name': editableDataUser.name, 'gender': editableDataUser.gender })
                     .then(() => {
                         setMessageUpload("Datos actualizados correctamente.");
                         setSeverityMessage('success');
-                        //if (dataUserExist) {
-                        //    loadUserData(dataUserExist.uuid);
-                        //}
                     }).catch((error) => {
                         setMessageUpload("ERROR al actualizar:\n " + error.message);
                         setSeverityMessage('error');
@@ -152,11 +146,28 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleChange = (e: { target: { name: string, value: any; }; }) => {
         setEditableDataUser({... editableDataUser, [e.target.name]: e.target.value}); 
     } 
 
     const genderDetailHTML = <TextField sx={{ width: '20ch' }} id="gender-detail-basic" variant="standard" value={editableDataUser.gender === 'Mejor dicho...' ? '' :  editableDataUser.gender} onChange={handleChange} name="gender"/>;
+
+    function generatorLawyerFields(): JSX.Element {
+        if(props.datauserparam?.role === USERS_TYPS.ABO.value){
+            return (
+                <>
+                <Alert severity="warning">Faltaría validar su cuenta. Por favor, revise el correo electrónico.</Alert>
+                </>
+            );
+        } else {
+            return (
+                <>
+                <Alert severity={props.datauserparam?.valid ? "info" : "warning"}>{props.datauserparam?.valid ? "Cuenta validada." : "Faltaría validar su cuenta. Por favor, revise el correo electrónico."}</Alert>
+                </>
+            );
+        }
+    }
 
     return (
         <React.Fragment>
@@ -192,6 +203,8 @@ function LoggedUserDataForm(props: { datauserparam: UserModel } | any) {
                 {(editableDataUser.gender != 'Masculino' && editableDataUser.gender != 'Femenino') ? genderDetailHTML : ''}
 
                 <small style={{ textAlign: 'justify' }}>(*)Campos&nbsp;obligatorios</small>
+
+                {generatorLawyerFields()}
 
                 <CustomErrorAlert></CustomErrorAlert>
                 <CardActions className='button-section'>

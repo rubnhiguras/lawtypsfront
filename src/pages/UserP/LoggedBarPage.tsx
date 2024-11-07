@@ -15,6 +15,7 @@ import { USERS_TYPS, firebaseAuth } from '../../services/Firebase/FirebaseServic
 import './User.css'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function LoggedBarPage(props: any) {
     const defaultusername: string = "'Persona Misteriosa'";
     const settingsTooltip: string = "Espacio personal";
@@ -22,10 +23,6 @@ function LoggedBarPage(props: any) {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [avatarDialog, setAvatarDialog] = React.useState(false); 
     const [closeSessionDialog, setCloseSessionDialog] = React.useState(false); 
-    
-    let userlogged: string;
-    let urlProfile: string;
-    let userArt: string;
 
     const userLoggedTrim = (username: string) => {
         let result = username;
@@ -44,9 +41,9 @@ function LoggedBarPage(props: any) {
         return result;
     }
 
-    userlogged = props.username ? userLoggedTrim(props.username) : '';
-    urlProfile = props.urlProfile ? props.urlProfile : '';
-    userArt    = props.userArt ? props.userArt : '';
+    const userlogged = props.username ? userLoggedTrim(props.username) : '';
+    const urlProfile = props.urlProfile ? props.urlProfile : '';
+    const userArt    = props.userArt ? props.userArt : '';
 
     const pages: Pages[] = [
         { typeuser: USERS_TYPS.ALL, name: 'Inicio', site: "/Home/", tooltip: "Bienvenida" },
@@ -148,7 +145,7 @@ function LoggedBarPage(props: any) {
         setCloseSessionDialog(false);
     }
 
-    function generateMenuItem(setting: Pages): any {
+    function generateMenuItem(setting: Pages): JSX.Element {
 
         if(USERS_TYPS.ALL === setting.typeuser || userArt === setting.typeuser.value){
 
@@ -166,7 +163,7 @@ function LoggedBarPage(props: any) {
         }
     }
 
-    function generatePageItem(page: Pages): any {
+    function generatePageItem(page: Pages): JSX.Element {
 
         if(USERS_TYPS.ALL === page.typeuser || userArt === page.typeuser.value){
             return (
@@ -185,7 +182,7 @@ function LoggedBarPage(props: any) {
         }
     }
 
-    function generatePageSmallItem(page: Pages): any {
+    function generatePageSmallItem(page: Pages): JSX.Element {
 
         if(USERS_TYPS.ALL === page.typeuser || userArt === page.typeuser.value){
             return (
@@ -200,10 +197,10 @@ function LoggedBarPage(props: any) {
         }
     }
 
-    function verifyAndRedirect(): any{
+    function verifyAndRedirect(): void{
         if(userArt?.length > 0){
             if(!verifyPath(window.location.pathname)){
-                window.location.href = '/forbidden';
+                window.location.href = '/wrongpath';
             }
         }
     }
@@ -211,7 +208,7 @@ function LoggedBarPage(props: any) {
     return (
         
         <AppBar position="static" sx={{ bgcolor: "#6b9080", borderRadius: "40px" }}>
-            {verifyAndRedirect()}
+            {verifyAndRedirect}
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>

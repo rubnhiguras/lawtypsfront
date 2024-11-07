@@ -1,10 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import LoginPage from './pages/LoginP/LoginPage'
 import HomePage from './pages/HomeP/HomePage'
-import RegisterPage from './pages/RegisterP/RegisterPage' 
-import LoggedContentPage from './pages/UserP/LoggedContentPage'
+import RegisterPage from './pages/RegisterP/RegisterPage'  
 import packageJson from '../package.json'; 
 import NotFoundPage from './pages/WrongP/NotFoundPage'
+import { AuthWrapper } from './pages/LoginP/AuthWrapper'
 
 function App() {  
   return (
@@ -13,9 +12,9 @@ function App() {
       <Routes>
         <Route index path='/' element={<HomePage />} key="home"  />
         <Route path='Home' element={<HomePage />} key="home"  />
-        <Route path='Login' element={<LoginPage />} key="login"  />
+        <Route path='Login' element={<AuthWrapper />} key="login" />
         <Route path='Register' element={<RegisterPage />} key="register"  />
-        <Route path='User/*' element={<LoggedContentPage />} key="user" /> 
+        <Route path='User/*' element={<AuthWrapper />} key="user" /> 
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

@@ -13,7 +13,7 @@ const defaultAvatarUrlUn: string = "https://www.limonium.org/wp-content/uploads/
 const defaultAvatarUrlFe: string = "https://www.svgrepo.com/show/10678/avatar.svg"
 const defaultAvatarUrlMa: string = "https://www.svgrepo.com/show/61986/avatar.svg"
 
-function RegisterPage(){
+function RegisterPage() {
 
   document.title = document.title = packageJson.title + ' ' + 'Register';
 
@@ -62,7 +62,7 @@ function RegisterPage(){
         }).finally(() => { setOpenSpinner(false); });
     } else {
       setOpenSpinner(false);
-    };
+    }
   };
 
   function setDataInDatabase(uid: string, urlProfile: string, genderToStore: string) {
@@ -72,7 +72,8 @@ function RegisterPage(){
       role,
       genderToStore,
       urlProfile,
-      uid
+      uid,
+      false
     );
     const userDoc = doc(firebaseDatabase, "users", userData.uuid);
     setDoc(userDoc, { ...userData })
@@ -112,7 +113,7 @@ function RegisterPage(){
 
 
   const handleBack = () => {
-    window.location.href = '/Login'; 
+    window.location.href = '/User/'; 
   };
 
   const onKeyDown = (e: { key: string; }) => {
@@ -237,6 +238,6 @@ function RegisterPage(){
       </CardContent>
     </Card>
   );
-};
+}
 
 export default RegisterPage;

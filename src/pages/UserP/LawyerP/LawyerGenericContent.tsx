@@ -27,22 +27,39 @@ import {
   Theme,
   useTheme,
 } from "@mui/material/styles";
+import {
+  firebaseDatabase,
+  USERS_TYPS,
+} from "../../../services/Firebase/FirebaseService";
+import { collection, query, where, getDocs, limit, orderBy, startAfter } from "firebase/firestore";
+import { LawyerModel } from "../../../services/Model/LawyerModel/LawyerModel";
+import { JSX } from "react";
 
-const defaultAvatarUrlUn: string =
-  "https://www.limonium.org/wp-content/uploads/2023/08/default-avatar.webp";
-const defaultAvatarUrlFe: string =
-  "https://www.svgrepo.com/show/10678/avatar.svg";
-const defaultAvatarUrlMa: string =
-  "https://www.svgrepo.com/show/61986/avatar.svg";
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
   const textMoreData = "Mostrar más...";
   const textInitScroll = "Volver al principio...";
-
-  const [contador, setContador] = React.useState(12);
+  const [currentData, setCurrentData] = React.useState<LawyerModel>();
+ 
   const [showInitButton, setShowInitButton] = React.useState(false);
   const [openPopupDetail, setOpenPopupDetail] = React.useState(false);
-  const [currentIndex, setCurrentIndex] = React.useState(-1);
+  const [dataLoaded, setDataLoaded] = React.useState(false); 
+  const [offset, setOffset] = React.useState(0); 
+  const [data, setData] = React.useState(Array<LawyerModel>);
+
+  const limitConstant = 8;
+
+  async function loadGridData() {
+    const q = query(
+      collection(firebaseDatabase, "users"),
+      where("role", "==", USERS_TYPS.ABO.value),
+      limit(limitConstant)
+    );
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setData((prevArray: any) => [...prevArray, doc.data()]);
+    }); 
+  }
 
   document.title = document.title =
     packageJson.title + " " + props.datauserparam?.name;
@@ -195,13 +212,7 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
   };
 
   const handleMoreCard = () => {
-    const focusVal = contador;
-    const newCounterVal = contador * 2;
-    setContador(newCounterVal);
-    console.log(
-      "handleMoreCard - " + document.getElementById("valItem" + focusVal)
-    );
-    document.getElementById("valItem" + focusVal)?.focus;
+    loadGridData();
   };
 
   const handleShowInit = () => {
@@ -210,15 +221,17 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
   };
 
   const buttonInitScroll = (
-    <Tooltip title={textInitScroll}>
-      <Fab
-        sx={buttonInitStyle}
-        aria-label="initbutton"
-        onClick={handleShowInit}
-      >
-        <ArrowUpwardIcon />
-      </Fab>
-    </Tooltip>
+    <>
+      <Tooltip title={textInitScroll}>
+        <Fab
+          sx={buttonInitStyle}
+          aria-label="initbutton"
+          onClick={handleShowInit}
+        >
+          <ArrowUpwardIcon />
+        </Fab>
+      </Tooltip>
+    </>
   );
 
   const filterStyle = {
@@ -228,76 +241,85 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
     display: { xs: "block", sm: "block", md: "inline-flex" },
   };
 
-  function popUpDetail(index: number): void {
-    setOpenPopupDetail(true);
-    setCurrentIndex(index);
-  }
-
   function popUpDetailClosed(): void {
     setOpenPopupDetail(false);
   }
 
-  function generateLawyerCard(index: number): JSX.Element {
+  function popUpDetail(data: LawyerModel): void {
+    setOpenPopupDetail(true);
+    setCurrentData(data);
+  }
+
+  function generateLawyerCard(data: LawyerModel): JSX.Element {
     return (
-      <Card sx={{ width: 340 }} key={index} id={"valItem" + index}>
-        <CardActionArea onClick={() => popUpDetail(index)}>
-          {generateLawyerCardDetail(index)}
+      <Card sx={{ width: 340 }} key={data.email} id={"valItem" + data.email}>
+        <CardActionArea onClick={() => popUpDetail(data)}>
+          {generateLawyerCardDetail(data)}
         </CardActionArea>
       </Card>
     );
   }
 
-  function generateLawyerCardDetail(index: number): JSX.Element {
+  function generateLawyerCardDetail(data: LawyerModel): JSX.Element {
     return (
       <>
-        <CardMedia
-          component="img"
-          image={
-            index % 7 === 0
-              ? defaultAvatarUrlMa
-              : index % 3 === 0
-              ? defaultAvatarUrlFe
-              : defaultAvatarUrlUn
-          }
-        />
+        <CardMedia component="img" image={data.urlAvatarProfile} />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            <div>Sr/a Abogado/a núm. {index + 1}</div>
+            {data.name}
           </Typography>
           <Typography
             variant="body1"
             sx={{ color: "text.primary" }}
             component="div"
           >
-            Descripción del abogado con núm. {index}
+            Descripción del abogado: {data.email}, {data.name}, {data.role}
           </Typography>
           <Typography
             variant="body2"
             sx={{ color: "text.secondary", padding: 2 }}
             component="div"
           >
-            <div>
-              {index % 7 === 0
-                ? colegios[7].label
-                : index % 3 === 0
-                ? colegios[3].label
-                : index % 5 === 0
-                ? colegios[5].label
-                : colegios[15].label}
-            </div>
-            <div>
-              {index % 7 === 0
-                ? colegios[7].location
-                : index % 3 === 0
-                ? colegios[3].location
-                : index % 5 === 0
-                ? colegios[5].location
-                : colegios[15].location}
-            </div>
+            {colegios[7].label}
+            {colegios[7].location}
           </Typography>
         </CardContent>
       </>
     );
+  }
+
+  function generateLawyerCardDetailWActions(data: LawyerModel): JSX.Element {
+    return (
+      <>
+        <CardMedia component="img" image={data?.urlAvatarProfile} />
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="div">
+            {data?.name}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "text.primary" }}
+            component="div"
+          >
+            Descripción del abogado: {data?.email}, {data?.name}, {data?.role}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", padding: 2 }}
+            component="div"
+          >
+            {colegios[7].label}
+            {colegios[7].location}
+          </Typography>
+        </CardContent>
+      </>
+    );
+  }
+
+
+  if(!dataLoaded){
+    loadGridData();
+    setDataLoaded(true);
   }
 
   const textFieldFilterStyle = (outerTheme: Theme) =>
@@ -373,17 +395,15 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
   return (
     <React.Fragment>
       <Dialog open={openPopupDetail} onClose={popUpDetailClosed}>
-        <DialogTitle id="avatar-dialog-title">
-          Abogado/a núm. {currentIndex}
-        </DialogTitle>
+        <DialogTitle id="avatar-dialog-title">{currentData?.name}</DialogTitle>
         <DialogContent id="avatar-dialog-content">
-          {generateLawyerCardDetail(currentIndex)}
+          {generateLawyerCardDetailWActions(currentData)}
         </DialogContent>
       </Dialog>
 
       <Box>
         <ThemeProvider theme={textFieldFilterStyle(useTheme())}>
-          <Grid
+          <Grid 
             sx={{
               display: { xs: "block", sm: "block", md: "inline-flex" },
               marginTop: 5,
@@ -425,9 +445,7 @@ function LawyerGenericContent(props: { datauserparam: UserModel } | any) {
           spacing={{ xs: 2 }}
           columns={{ xs: 1, sm: 4, md: 8, xl: 16 }}
         >
-          {Array.from(Array(contador)).map((_, index) =>
-            generateLawyerCard(index)
-          )}
+          {Array.from(data).map((_, index) => generateLawyerCard(data[index]))}
         </Grid>
       </Box>
 
